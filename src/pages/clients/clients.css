@@ -1,0 +1,406 @@
+/* === VARIABLES DE DISEÑO === */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+/* === PÁGINA PRINCIPAL === */
+.clients-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.clients-page > h1 {
+  font-size: clamp(24px, 4vw, 32px); /* Se adapta entre celular y PC */
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-dark);
+}
+
+/* === TARJETA DEL FORMULARIO === */
+.clients-form-card {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 40px;
+  border: 1px solid var(--border);
+}
+
+.clients-form-card > h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dark);
+}
+
+/* Magia Grid: 1 columna en celular, 2 en PC */
+.clients-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Elementos que ocuparán toda la fila en PC */
+.clients-form > .clients-photo-container,
+.clients-form > .clients-btn-group {
+  grid-column: 1 / -1; 
+}
+
+/* === INPUTS === */
+.clients-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  background: var(--bg-page);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.clients-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #fff;
+}
+
+textarea.clients-input {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* === FILA DE INPUTS PEQUEÑOS === */
+.clients-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  grid-column: 1 / -1;
+}
+
+.clients-small-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clients-help-text {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+/* === SUBIDA DE FOTOS === */
+.clients-photo-container {
+  margin-top: 8px;
+}
+
+.clients-photo-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.clients-file-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clients-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg-page);
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: all 0.2s;
+}
+
+.clients-file-label:hover {
+  background: #e0f2fe;
+  border-color: var(--primary);
+}
+
+.clients-file-hidden { display: none; }
+.clients-file-name { font-size: 12px; color: var(--text-light); }
+
+.clients-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-page);
+  border-radius: 12px;
+}
+
+.clients-preview-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.clients-remove-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.clients-remove-btn:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* === BOTONES DEL FORMULARIO === */
+.clients-btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.clients-btn-primary, .clients-btn-secondary {
+  flex: 1;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clients-btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.clients-btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.clients-btn-secondary {
+  background: var(--border);
+  color: var(--text-medium);
+}
+
+.clients-btn-secondary:hover {
+  background: #cbd5e1;
+}
+
+/* === LISTA DE CLIENTES === */
+.clients-subtitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+/* Grid Mágico: 1 col en celular, 2 en tablet, 3 en PC grande */
+.clients-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* === TARJETA DE CADA CLIENTE === */
+.clients-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.clients-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* Estilo para cliente inactivo */
+.clients-card.inactive {
+  border-left-color: var(--warning);
+  background: #fffdf5; /* Un amarillo casi imperceptible */
+}
+
+.clients-photo-small {
+  width: 100%;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.clients-small-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clients-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.clients-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.clients-badge {
+  font-size: 11px;
+  background: #fef3c7;
+  color: #b45309;
+  padding: 4px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.clients-contact, .clients-times {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-medium);
+}
+
+.clients-times {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.clients-notes {
+  font-size: 12px;
+  color: var(--text-light);
+  font-style: italic;
+  display: flex;
+  gap: 6px;
+}
+
+.clients-action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.clients-btn-edit, .clients-btn-delete {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.clients-btn-edit:hover {
+  background: #e0f2fe;
+  border-color: var(--primary);
+}
+
+.clients-btn-delete:hover {
+  background: #fee2e2;
+  border-color: var(--danger);
+}
+
+/* ==========================================
+   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   ========================================== */
+
+/* Tablets y pantallas medianas */
+@media (min-width: 640px) {
+  .clients-form {
+    grid-template-columns: 1fr 1fr; /* Formulario a 2 columnas */
+  }
+  
+  .clients-row {
+    grid-template-columns: 1fr 1fr 1fr; /* Los 3 inputs pequeños en una fila */
+  }
+
+  .clients-grid {
+    grid-template-columns: repeat(2, 1fr); /* Lista de clientes a 2 columnas */
+  }
+}
+
+/* PC Escritorio */
+@media (min-width: 1024px) {
+  .clients-form-card {
+    padding: 32px;
+  }
+
+  .clients-grid {
+    grid-template-columns: repeat(3, 1fr); /* Lista de clientes a 3 columnas */
+  }
+
+  /* En PC, la tarjeta del cliente se vuelve horizontal si tiene foto */
+  .clients-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .clients-photo-small {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+
+  .clients-action-buttons {
+    flex-direction: column;
+    border-top: none;
+    padding-top: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 12px;
+    margin-top: 0;
+    margin-left: 8px;
+  }
+}

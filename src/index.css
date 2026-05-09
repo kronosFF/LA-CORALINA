@@ -1,0 +1,22 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 🔥 FUENTE GLOBAL */
+body {
+  font-family: 'Sora', sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* OPCIONAL: mejora inputs y botones */
+button {
+  font-family: 'Sora', sans-serif;
+}
+
+input {
+  font-family: 'Sora', sans-serif;
+}

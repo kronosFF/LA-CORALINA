@@ -1,0 +1,240 @@
+/* === VARIABLES === */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+/* === PÁGINA PRINCIPAL === */
+.orders-page {
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+/* === HEADER CON NOTIFICACIONES === */
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.orders-header h1 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  margin: 0;
+}
+
+/* Notificaciones (Mismo estilo que NotificationBell para consistencia) */
+.orders-notif-container {
+  position: relative;
+}
+
+.orders-notif-btn {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 14px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.orders-notif-btn:hover { background: var(--bg-page); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+.orders-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 50%;
+  padding: 2px 6px;
+  min-width: 18px;
+  text-align: center;
+  border: 2px solid var(--bg-page); /* Efecto dona */
+}
+
+.orders-notif-dropdown {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 340px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  z-index: 1000;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+.orders-notif-dropdown h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.orders-notif-item {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  transition: background 0.2s;
+  border: 1px solid transparent;
+}
+
+.orders-notif-item.unread {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.orders-notif-item:hover { background: var(--bg-page); }
+.orders-notif-item strong { display: block; font-size: 14px; margin-bottom: 4px; }
+.orders-notif-item p { margin: 0; font-size: 12px; color: var(--text-medium); }
+.orders-notif-date { font-size: 10px; color: var(--text-light); display: block; margin-top: 6px; }
+
+/* === FILTROS === */
+.orders-filters {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.orders-date-input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+
+/* === TABS (Segmented Control) === */
+.orders-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  background: var(--bg-page);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.orders-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  background: transparent;
+  color: var(--text-medium);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.orders-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+/* === LISTA Y WRAPPERS === */
+.order-wrapper {
+  margin-bottom: 16px;
+}
+
+/* Para que la info de pago se pegue a la tarjeta OrderCard visualmente */
+.order-wrapper:has(.payment-info) .order-card {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.payment-info {
+  background: var(--bg-page);
+  padding: 12px 20px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  border: 1px solid var(--border);
+  border-top: none;
+  font-size: 13px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--text-medium);
+  font-weight: 600;
+}
+
+/* === BADGES DE PAGO === */
+.paid-badge {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pending-badge {
+  background: #fef3c7;
+  color: #b45309;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   ========================================== */
+
+@media (max-width: 480px) {
+  .orders-tabs {
+    flex-wrap: wrap; /* Si no caben, bajan a la siguiente línea en celular */
+  }
+  .orders-tab {
+    flex: 1 1 45%; /* Ocupan casi la mitad del ancho */
+  }
+  .orders-notif-dropdown {
+    width: 90vw; /* Ocupa casi toda la pantalla en celular */
+    right: -20px;
+  }
+}

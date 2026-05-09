@@ -1,0 +1,270 @@
+/* === VARIABLES === */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #16a34a;
+  --purple: #8b5cf6;
+  --cyan: #06b6d4;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+/* === PÁGINA PRINCIPAL === */
+.dashboard-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.dashboard-page > h1 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+/* === SECCIONES === */
+.dash-section {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border-top: 5px solid var(--primary); /* Acento azul por defecto */
+}
+
+.dash-section.accent-warning { border-top-color: var(--warning); }
+.dash-section.accent-purple { border-top-color: var(--purple); }
+.dash-section.accent-danger { border-top-color: var(--danger); }
+.dash-section.accent-cyan { border-top-color: var(--cyan); }
+.dash-section.accent-success { border-top-color: var(--success); }
+
+.dash-section > h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === FILTROS === */
+.dash-filters {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+
+.dash-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-page);
+  font-size: 14px;
+  color: var(--text-dark);
+  min-width: 140px;
+}
+
+.dash-btn-clear {
+  padding: 10px 20px;
+  background: var(--bg-page);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-medium);
+  transition: all 0.2s;
+}
+
+.dash-btn-clear:hover { background: #e2e8f0; color: var(--text-dark); }
+
+/* === GRIDS === */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.dash-grid-small {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+/* === TARJETA KPI (Métricas) === */
+.dash-card {
+  background: var(--bg-page);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--text-light); /* Color neutro por defecto */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dash-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+/* Colores de acento dinámicos para las tarjetas */
+.dash-card.border-success { border-left-color: var(--success); }
+.dash-card.border-warning { border-left-color: var(--warning); }
+.dash-card.border-danger { border-left-color: var(--danger); }
+.dash-card.border-primary { border-left-color: var(--primary); }
+
+.dash-card-title {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.dash-card-value {
+  font-size: 28px;
+  color: var(--text-dark);
+  margin: 0;
+  font-weight: 800;
+}
+
+/* === RANKING === */
+.dash-ranking-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--bg-page);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.dash-ranking-item:hover { background: #eef2ff; }
+
+.dash-medal {
+  font-size: 20px;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dash-seller-name { flex: 1; font-weight: 600; color: var(--text-dark); }
+.dash-seller-amount { font-weight: 800; color: var(--success); font-size: 16px; }
+
+/* === STOCK Y DEUDAS (Reutiliza estilos de Stock.css) === */
+.dash-stock-card, .dash-debt-card {
+  background: var(--bg-page);
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.dash-stock-card h4, .dash-debt-card h4 { 
+  font-size: 14px; 
+  margin-bottom: 8px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.dash-qty {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 8px 0;
+  line-height: 1;
+}
+
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+
+.dash-price { color: var(--text-light); font-size: 13px; margin-top: 4px; }
+.dash-debt-status { font-size: 18px; font-weight: 800; margin-top: 8px; }
+
+/* === GASTOS === */
+.dash-expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.dash-expense-card {
+  background: var(--bg-page);
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.dash-expense-total { font-size: 18px; font-weight: 800; color: var(--danger); margin: 8px 0; }
+
+.dash-expense-detail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.dash-expense-cat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--text-medium);
+}
+
+.dash-expense-details-summary { cursor: pointer; color: var(--primary); font-weight: 600; font-size: 13px; margin-top: 12px; display: block; }
+.dash-expense-item { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; color: var(--text-light); border-bottom: 1px solid #f1f5f9; }
+.dash-expense-more { font-size: 11px; color: var(--text-light); text-align: center; margin-top: 6px; }
+
+/* === CLIENTES INACTIVOS === */
+.dash-inactive-card {
+  background: #fff1f2;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-left: 5px solid var(--danger);
+  border: 1px solid #fecdd3;
+  border-left: 5px solid var(--danger);
+}
+
+.dash-inactive-info strong { display: block; color: #b91c1c; font-size: 15px; }
+.dash-inactive-sub { font-size: 12px; color: var(--text-medium); margin-top: 4px; }
+.dash-inactive-days { text-align: right; }
+.dash-days-count { color: var(--danger); font-weight: 800; font-size: 22px; display: block; }
+.dash-days-label { font-size: 11px; color: var(--text-light); }
+
+/* ==========================================
+   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   ========================================== */
+
+@media (min-width: 768px) {
+  .dash-card-value {
+    font-size: 32px; /* Números más grandes en PC */
+  }
+  .dash-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}

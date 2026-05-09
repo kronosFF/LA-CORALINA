@@ -1,0 +1,46 @@
+.alert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.alert-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease; /* Solo animamos el transform para mejor rendimiento */
+  min-width: 280px;
+  transform: scale(1); /* Estado normal */
+}
+
+/* 🎁 La clase mágica del pulso */
+.alert-box.pulse {
+  transform: scale(1.02); /* Estado agrandado */
+}
+
+.alert-title {
+  margin-bottom: 8px; /* Pasamos este margen que tenías inline en el h3 */
+}
+
+.alert-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s; /* Bonus: transición suave al pasar el ratón */
+}
+
+/* 🎁 Bonus: Efecto hover */
+.alert-btn:hover {
+  background: #1d4ed8;
+}

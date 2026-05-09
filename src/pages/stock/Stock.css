@@ -1,0 +1,328 @@
+/* === VARIABLES === */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #16a34a;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+/* === PÁGINA PRINCIPAL === */
+.stock-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.stock-page > h1 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+/* === SECCIONES GRANDES === */
+.stock-section {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 32px;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--primary); /* Acento azul por defecto */
+}
+
+.stock-section.bottles-section {
+  border-top-color: #06b6d4; /* Acento cian para botellones */
+}
+
+.stock-section.history-section {
+  border-top-color: #8b5cf6; /* Acento morado para historial */
+}
+
+.stock-section > h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* === TABS (Entrada/Salida) === */
+.stock-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: var(--bg-page);
+  padding: 6px;
+  border-radius: 14px;
+}
+
+.stock-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  background: transparent;
+  color: var(--text-medium);
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.stock-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+/* === SUB-TARJETAS Y FORMULARIOS === */
+.stock-inner-card {
+  background: var(--bg-page);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.stock-inner-card > h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.stock-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.stock-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  background: #fff;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.stock-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea.stock-input { resize: vertical; min-height: 60px; }
+select.stock-input { cursor: pointer; }
+
+.stock-btn-primary {
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.stock-btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+.stock-btn-secondary {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--text-light);
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.stock-btn-secondary:hover { background: #475569; }
+
+/* === GRIDS DE INVENTARIO Y DEUDAS === */
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stock-product-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: transform 0.2s;
+}
+
+.stock-product-card:hover { transform: translateY(-2px); }
+
+.stock-product-card h4 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-qty {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 8px 0;
+  line-height: 1;
+}
+
+/* Semáforos de Stock */
+.stock-high { color: var(--success); }
+.stock-medium { color: var(--warning); }
+.stock-low { color: var(--danger); }
+
+.stock-price {
+  color: var(--text-light);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Deudas */
+.debt-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.debt-card h4 { margin-bottom: 12px; font-size: 15px; }
+.debt-card p { font-size: 13px; color: var(--text-medium); margin-bottom: 4px; }
+
+.debt-status {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
+.debt-pending { color: var(--danger); }
+.debt-clear { color: var(--success); }
+
+/* === FILTROS === */
+.stock-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stock-filter-select {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  flex: 1;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+/* === TIMELINE DE MOVIMIENTOS === */
+.movement-card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--text-light); /* Borde neutro por defecto */
+  transition: box-shadow 0.2s;
+}
+
+.movement-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.movement-card.movement-out { border-left-color: var(--danger); }
+.movement-card.movement-in { border-left-color: var(--success); }
+
+.movement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.movement-product { font-size: 15px; font-weight: 700; }
+
+.movement-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.badge-in { background: #dcfce7; color: #15803d; }
+.badge-out { background: #fee2e2; color: #b91c1c; }
+
+.movement-qty {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.qty-in { color: var(--success); }
+.qty-out { color: var(--danger); }
+
+.movement-comment {
+  font-size: 13px;
+  color: var(--text-medium);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.movement-meta {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 8px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================
+   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   ========================================== */
+
+@media (min-width: 640px) {
+  .stock-form {
+    grid-template-columns: 1fr 1fr; /* Formularios a 2 columnas */
+  }
+  .stock-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .stock-form {
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columnas en PC para forms largos */
+  }
+  /* El textarea y el botón ocupan toda la fila en PC */
+  .stock-form .full-width {
+    grid-column: 1 / -1;
+  }
+}

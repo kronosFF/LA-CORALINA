@@ -1,0 +1,108 @@
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 16px;
+  overflow: hidden;
+}
+
+.sidebar-logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.sidebar-logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-logo-text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.sidebar-user-info {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 5px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  color: #e2e8f0;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+/* 🎁 BONUS: Efecto al pasar el ratón por los botones de navegación */
+.sidebar-nav-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.sidebar-logout-container {
+  padding: 20px 0 0 0;
+  border-top: 1px solid #334155;
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* 🎁 BONUS: Efecto al pasar el ratón por el botón de cerrar sesión */
+.sidebar-logout-btn:hover {
+  background: #dc2626;
+}

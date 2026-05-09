@@ -1,0 +1,118 @@
+.bell-container {
+  position: relative;
+}
+
+.bell-button {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🎁 Bonus: Efecto al pasar el ratón sobre la campana */
+.bell-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.bell-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  min-width: 18px;
+  display: flex;       /* Ayuda a centrar el número */
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bell-dropdown-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8fafc;
+}
+
+.bell-unread-badge {
+  font-size: 11px;
+  background-color: #2563eb;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.bell-dropdown-list {
+  overflow-y: auto;
+  max-height: 350px;
+}
+
+.bell-empty-state {
+  padding: 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.bell-notification-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s;
+  background-color: #fff; /* Por defecto, fondo blanco (leído) */
+}
+
+/* 🎁 Bonus: Efecto al pasar el ratón sobre una notificación */
+.bell-notification-item:hover {
+  background-color: #f1f5f9 !important; 
+}
+
+/* La magia: Si tiene la clase .unread, el fondo es azul */
+.bell-notification-item.unread {
+  background-color: #e0f2fe;
+}
+
+.bell-notification-title {
+  font-weight: bold;
+  font-size: 14px;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.bell-notification-message {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.bell-notification-date {
+  font-size: 10px;
+  color: #94a3b8;
+}
