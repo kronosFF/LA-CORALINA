@@ -2,13 +2,16 @@ import { useContext, useState } from "react";
 import { OrderContext } from "../../context/OrderContext";
 import { AuthContext } from "../../context/AuthContext";
 import { ProductContext } from "../../context/ProductContext";
+import { useToast } from "../../context/ToastContext";
+import Icons from "../../components/icons/Icons";
 import { useElapsedTime, formatTime, getStatusColor } from "../../hooks/useElapsedTime";
-import './OrderCard.css'; // <-- Asegúrate de que la ruta sea correcta
+import './OrderCard.css';
 
 export default function OrderCard({ order }) {
   const { updateStatus, cancelOrder, registerPayment, getPaymentsByOrder } = useContext(OrderContext);
   const { user } = useContext(AuthContext);
   const productContext = useContext(ProductContext);
+  const { addToast } = useToast();
   const [busy, setBusy] = useState(false);
   const [showProducts, setShowProducts] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -19,10 +22,97 @@ export default function OrderCard({ order }) {
   const [paymentProofName, setPaymentProofName] = useState("");
   const [paymentProofPreview, setPaymentProofPreview] = useState(null);
 
+  // Función auxiliar de métodos de pago
+  const getPaymentMethodLabel = (method) => {
+    const methods = {
+      efectivo: "Efectivo",
+      nequi: "Nequi",
+      llave: "Llave",
+      transferencia: "Transferencia",
+      otros: "Otros",
+      credito_empresa: "Crédito empresa",
+      credito_vendedor: "Crédito vendedor",
+    };
+    return methods[method] || method;
+  };
+
   const displayId = order.numericId || order.id.slice(-6);
   const remainingDebt = (order.total || 0) - (order.totalPaid || 0);
   const paymentsHistory = getPaymentsByOrder(order.id);
 
+  // ✅ PEDIDO CANCELADO
+  if (order.status === "cancelado") {
+    return (
+      <div className="order-card" style={{ borderLeft: "5px solid #ef4444", opacity: 0.8 }}>
+        <div onClick={() => setShowProducts(!showProducts)}>
+          <div className="card-header">
+            <h3>Pedido #{displayId}</h3>
+            <span className="chevron">{showProducts ? <Icons.Cancel size={18} /> : <Icons.Plus size={18} />}</span>
+          </div>
+
+          <p><strong>Cliente:</strong> {order.clientData?.name}</p>
+          <p><strong>Teléfono:</strong> {order.clientData?.phone}</p>
+          <p><strong>Dirección:</strong> {order.clientData?.address}</p>
+          {order.clientData?.location && <p><strong>Ubicación:</strong> {order.clientData.location}</p>}
+          {order.clientData?.notes && <p><strong>Notas:</strong> {order.clientData.notes}</p>}
+          <p><strong>Vendedor:</strong> {order.sellerName}</p>
+          <p><strong>Total:</strong> ${order.total?.toLocaleString()}</p>
+
+          {/* ❌ MENSAJE DE CANCELADO */}
+          <div style={{
+            background: "#fee2e2",
+            border: "2px solid #ef4444",
+            borderRadius: "12px",
+            padding: "16px",
+            marginTop: "12px",
+            textAlign: "center"
+          }}>
+            <h3 style={{ color: "#b91c1c", margin: 0, fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+              <Icons.X size={24} />
+              PEDIDO CANCELADO
+            </h3>
+            <p style={{ color: "#7f1d1d", margin: "8px 0 0 0", fontSize: "13px" }}>
+              Este pedido fue cancelado y no se puede modificar.
+            </p>
+            {order.timestamps?.cancelado && (
+              <p style={{ color: "#7f1d1d", margin: "4px 0 0 0", fontSize: "12px" }}>
+                Cancelado el: {order.timestamps.cancelado.toDate ?
+                  order.timestamps.cancelado.toDate().toLocaleString() :
+                  new Date(order.timestamps.cancelado).toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          <div className="payment-status-container">
+            <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
+            <span className="badge badge-pending">Cancelado</span>
+          </div>
+        </div>
+
+        {showProducts && (
+          <div className="products-container">
+            <h4 className="products-title">Productos del pedido:</h4>
+            {order.items && order.items.length > 0 ? (
+              order.items.map((item, idx) => (
+                <div key={idx} className="product-item">
+                  <span>{item.name}</span>
+                  <span>Cantidad: {item.qty}</span>
+                  <span>${(item.price * item.qty).toLocaleString()}</span>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: "#64748b" }}>No hay productos registrados</p>
+            )}
+            <div className="product-total">
+              <strong>Total: ${order.total?.toLocaleString()}</strong>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 🔄 PEDIDO NORMAL
   const getCurrentTimestamp = () => {
     const status = order.status;
     let timestamp = null;
@@ -70,7 +160,8 @@ export default function OrderCard({ order }) {
 
   const handleCancel = () => {
     if (busy) return;
-    if (confirm(`¿Cancelar pedido #${displayId}? Se devolverá el stock.`)) {
+    const confirmCancel = window.confirm(`¿Cancelar pedido #${displayId}? Se devolverá el stock.`);
+    if (confirmCancel) {
       setBusy(true);
       cancelOrder(order.id, user, productContext);
       setTimeout(() => setBusy(false), 350);
@@ -92,15 +183,15 @@ export default function OrderCard({ order }) {
 
   const handleRegisterPayment = async () => {
     if (!paymentAmount || paymentAmount <= 0) {
-      alert("❌ Ingresa un monto válido");
+      addToast("Ingresa un monto válido", "error");
       return;
     }
     if (paymentAmount > remainingDebt) {
-      alert(`❌ El monto no puede superar el saldo pendiente ($${remainingDebt.toLocaleString()})`);
+      addToast(`El monto no puede superar el saldo pendiente ($${remainingDebt.toLocaleString()})`, "error");
       return;
     }
     if (!paymentMethod) {
-      alert("❌ Selecciona un método de pago");
+      addToast("Selecciona un método de pago", "error");
       return;
     }
 
@@ -114,28 +205,29 @@ export default function OrderCard({ order }) {
     setPaymentProof(null);
     setPaymentProofName("");
     setPaymentProofPreview(null);
+    addToast("Pago registrado correctamente", "success");
   };
 
-  const paymentMethods = [
-    { value: "efectivo", label: "💵 Efectivo" },
-    { value: "nequi", label: "📱 Nequi" },
-    { value: "llave", label: "🔑 Llave" },
-    { value: "transferencia", label: "🏦 Transferencia" },
-    { value: "otros", label: "📌 Otros" },
-  ];
-
-  const getPaymentMethodLabel = (method) => {
+  const getPaymentMethodLabelWithIcon = (method) => {
     const methods = {
-      efectivo: "💵 Efectivo",
-      nequi: "📱 Nequi",
-      llave: "🔑 Llave",
-      transferencia: "🏦 Transferencia",
-      otros: "📌 Otros",
-      credito_empresa: "🏢 Crédito empresa",
-      credito_vendedor: "👤 Crédito vendedor",
+      efectivo: "Efectivo",
+      nequi: "Nequi",
+      llave: "Llave",
+      transferencia: "Transferencia",
+      otros: "Otros",
+      credito_empresa: "Crédito empresa",
+      credito_vendedor: "Crédito vendedor",
     };
     return methods[method] || method;
   };
+
+  const paymentMethods = [
+    { value: "efectivo", label: "Efectivo" },
+    { value: "nequi", label: "Nequi" },
+    { value: "llave", label: "Llave" },
+    { value: "transferencia", label: "Transferencia" },
+    { value: "otros", label: "Otros" },
+  ];
 
   return (
     <>
@@ -143,33 +235,33 @@ export default function OrderCard({ order }) {
         <div onClick={() => setShowProducts(!showProducts)}>
           <div className="card-header">
             <h3>Pedido #{displayId}</h3>
-            <span className="chevron">{showProducts ? "▲" : "▼"}</span>
+            <span className="chevron">{showProducts ? <Icons.Cancel size={18} /> : <Icons.Plus size={18} />}</span>
           </div>
 
           <p><strong>Cliente:</strong> {order.clientData?.name}</p>
           <p><strong>Teléfono:</strong> {order.clientData?.phone}</p>
           <p><strong>Dirección:</strong> {order.clientData?.address}</p>
-          {order.clientData?.location && <p><strong>📍 Ubicación:</strong> {order.clientData.location}</p>}
-          {order.clientData?.notes && <p><strong>📝 Notas:</strong> {order.clientData.notes}</p>}
+          {order.clientData?.location && <p><strong>Ubicación:</strong> {order.clientData.location}</p>}
+          {order.clientData?.notes && <p><strong>Notas:</strong> {order.clientData.notes}</p>}
           <p><strong>Vendedor:</strong> {order.sellerName}</p>
           <p><strong>Total:</strong> ${order.total?.toLocaleString()}</p>
-          <p><strong>⏰ Tiempo de entrega:</strong> {order.clientData?.deliveryHours || 2} horas</p>
+          <p><strong>Tiempo de entrega:</strong> {order.clientData?.deliveryHours || 2} horas</p>
 
           <div className="payment-status-container">
-            <span>💰 {getPaymentMethodLabel(order.paymentMethod)}</span>
-            {order.paymentStatus === "pagado" && <span className="badge badge-paid">✅ Pagado</span>}
-            {order.paymentStatus === "credito" && <span className="badge badge-credit">⏳ Crédito - Debe: ${remainingDebt.toLocaleString()}</span>}
-            {order.paymentStatus === "pendiente" && <span className="badge badge-pending">⏳ Pendiente</span>}
-            {order.creditType && <span> • {order.creditType === "empresa" ? "🏢 Crédito empresa" : "👤 Crédito vendedor"}</span>}
+            <span>{getPaymentMethodLabelWithIcon(order.paymentMethod)}</span>
+            {order.paymentStatus === "pagado" && <span className="badge badge-paid">Pagado</span>}
+            {order.paymentStatus === "credito" && <span className="badge badge-credit">Crédito - Debe: ${remainingDebt.toLocaleString()}</span>}
+            {order.paymentStatus === "pendiente" && <span className="badge badge-pending">Pendiente</span>}
+            {order.creditType && <span> • {order.creditType === "empresa" ? "Crédito empresa" : "Crédito vendedor"}</span>}
           </div>
 
           {paymentsHistory.length > 0 && (
             <details className="payments-details">
-              <summary className="payments-summary">📋 Historial de abonos ({paymentsHistory.length})</summary>
+              <summary className="payments-summary">Historial de abonos ({paymentsHistory.length})</summary>
               {paymentsHistory.map(p => (
                 <div key={p.id} className="payment-history-item">
-                  <span>💰 ${p.amount.toLocaleString()}</span>
-                  <span>{getPaymentMethodLabel(p.paymentMethod)}</span>
+                  <span>${p.amount.toLocaleString()}</span>
+                  <span>{getPaymentMethodLabelWithIcon(p.paymentMethod)}</span>
                   <span style={{ fontSize: "10px", color: "#64748b" }}>{p.date?.toDate?.().toLocaleString() || new Date(p.date).toLocaleString()}</span>
                 </div>
               ))}
@@ -179,12 +271,12 @@ export default function OrderCard({ order }) {
           <div className="timer-container">
             <div className="timer-header">
               <span style={{ fontWeight: "bold", color: statusColor }}>
-                ⏱️ {order.status === "preparacion" && "En preparación:"}
+                {order.status === "preparacion" && "En preparación:"}
                 {order.status === "reparto" && "En reparto:"}
                 {order.status === "entregado" && "Entregado:"}
               </span>
               <span style={{ fontWeight: "bold", color: statusColor }}>
-                {order.status === "entregado" ? "✅ Completado" : elapsedFormatted}
+                {order.status === "entregado" ? "Completado" : elapsedFormatted}
               </span>
             </div>
 
@@ -202,7 +294,8 @@ export default function OrderCard({ order }) {
 
             {order.status !== "entregado" && elapsedSeconds >= (limitMinutes * 60) && (
               <div className="warning-text">
-                ⚠️ Tiempo límite superado
+                <Icons.Warning size={14} />
+                Tiempo límite superado
               </div>
             )}
           </div>
@@ -210,7 +303,7 @@ export default function OrderCard({ order }) {
 
         {showProducts && (
           <div className="products-container">
-            <h4 className="products-title">📦 Productos del pedido:</h4>
+            <h4 className="products-title">Productos del pedido:</h4>
             {order.items && order.items.length > 0 ? (
               order.items.map((item, idx) => (
                 <div key={idx} className="product-item">
@@ -236,7 +329,7 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={() => go("reparto")}
             >
-              🚚 A reparto
+              A reparto
             </button>
           )}
 
@@ -247,7 +340,7 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={() => go("entregado")}
             >
-              ✅ Entregado
+              Entregado
             </button>
           )}
 
@@ -258,7 +351,7 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={() => setShowPaymentModal(true)}
             >
-              💰 {order.paymentStatus === "credito" ? `Abonar (debe: $${remainingDebt.toLocaleString()})` : "Registrar pago"}
+              {order.paymentStatus === "credito" ? `Abonar (debe: $${remainingDebt.toLocaleString()})` : "Registrar pago"}
             </button>
           )}
 
@@ -269,7 +362,7 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={() => go("preparacion")}
             >
-              ⬅ Volver a preparación
+              Volver a preparación
             </button>
           )}
 
@@ -280,18 +373,19 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={() => go("reparto")}
             >
-              ⬅ Volver a reparto
+              Volver a reparto
             </button>
           )}
 
-          {user.role !== "vendedor" && order.status !== "entregado" && (
+          {user.role !== "vendedor" && order.status !== "entregado" && order.status !== "cancelado" && (
             <button
               className="btn-base"
               style={{ background: "#dc2626", color: "#fff" }}
               disabled={busy}
               onClick={handleCancel}
             >
-              ❌ Cancelar pedido
+              <Icons.X size={16} />
+              Cancelar pedido
             </button>
           )}
         </div>
@@ -300,7 +394,7 @@ export default function OrderCard({ order }) {
       {showPaymentModal && (
         <div className="modal-overlay" onClick={() => setShowPaymentModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">💰 {order.paymentStatus === "credito" ? "Registrar abono" : "Registrar pago"}</h3>
+            <h3 className="modal-title">{order.paymentStatus === "credito" ? "Registrar abono" : "Registrar pago"}</h3>
 
             <div className="debt-info">
               <strong>Total del pedido:</strong> ${order.total?.toLocaleString()}<br />
@@ -309,7 +403,7 @@ export default function OrderCard({ order }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">💰 Monto a pagar</label>
+              <label className="form-label">Monto a pagar</label>
               <input
                 type="number"
                 placeholder="Ingresa el monto"
@@ -322,7 +416,7 @@ export default function OrderCard({ order }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">💳 Método de pago</label>
+              <label className="form-label">Método de pago</label>
               <div className="payment-methods-grid">
                 {paymentMethods.map((method) => (
                   <div
@@ -347,7 +441,7 @@ export default function OrderCard({ order }) {
               <div className="file-upload-container">
                 <div className="file-upload-wrapper">
                   <label className="file-upload-label">
-                    📎 Subir comprobante
+                    Subir comprobante
                     <input
                       type="file"
                       accept="image/*"
@@ -367,7 +461,7 @@ export default function OrderCard({ order }) {
             )}
 
             <div className="form-group">
-              <label className="form-label">📝 Comentario (opcional)</label>
+              <label className="form-label">Comentario (opcional)</label>
               <textarea
                 placeholder="Ej: Abono por $50,000, queda pendiente $30,000"
                 value={paymentComment}

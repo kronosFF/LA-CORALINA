@@ -2,8 +2,10 @@ import { useState, useContext, useRef } from "react";
 import { ProductContext } from "../../context/ProductContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import Icons from "../../components/icons/Icons";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import "./products.css";
+
 export default function Products() {
   const { user } = useContext(AuthContext);
   const { addToast } = useToast();
@@ -12,7 +14,7 @@ export default function Products() {
   if (user?.role !== "admin" && user?.role !== "planta") {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
-        <p>🚫 No tienes acceso a esta sección</p>
+        <p>No tienes acceso a esta sección</p>
       </div>
     );
   }
@@ -44,7 +46,7 @@ export default function Products() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.price) {
-      addToast("❌ Completa los datos del producto", "error"); // <-- MEJORADO
+      addToast("Completa los datos del producto", "error");
       return;
     }
 
@@ -56,7 +58,7 @@ export default function Products() {
 
     if (success) {
       resetForm();
-      addToast(editing ? "✅ Producto actualizado" : "✅ Producto creado", "success"); // <-- MEJORADO
+      addToast(editing ? "Producto actualizado" : "Producto creado", "success");
     }
   };
 
@@ -69,40 +71,76 @@ export default function Products() {
 
   return (
     <div className="products-page">
-      <h1>📦 Productos</h1>
+      <h1>Productos</h1>
 
       <div className="products-form-card">
-        <h3>{editing ? "✏️ Editar producto" : "➕ Nuevo producto"}</h3>
+        <h3>{editing ? "Editar producto" : "Nuevo producto"}</h3>
         <form onSubmit={handleSubmit} className="products-form">
-          <input name="name" placeholder="Nombre del producto" value={form.name} onChange={handleChange} className="products-input" />
-          <input name="price" type="number" placeholder="Precio" value={form.price} onChange={handleChange} className="products-input" />
+          <input
+            name="name"
+            placeholder="Nombre del producto"
+            value={form.name}
+            onChange={handleChange}
+            className="products-input"
+          />
+          <input
+            name="price"
+            type="number"
+            placeholder="Precio"
+            value={form.price}
+            onChange={handleChange}
+            className="products-input"
+          />
 
           <div className="photo-container">
-            <label className="photo-label">📷 Imagen del producto</label>
+            <label className="photo-label"><Icons.Image size={18} /> Imagen del producto</label>
             <div className="file-upload-wrapper">
-              <label className="file-upload-label">📎 Seleccionar archivo<input type="file" accept="image/*" onChange={handleImageUpload} ref={fileInputRef} className="file-input-hidden" /></label>
+              <label className="file-upload-label">
+                <Icons.Upload size={16} />
+                Seleccionar archivo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  ref={fileInputRef}
+                  className="file-input-hidden"
+                />
+              </label>
               {selectedImageName && <span className="file-name">{selectedImageName}</span>}
               {!selectedImageName && form.image && <span className="file-name">Imagen actual cargada</span>}
             </div>
             {(selectedImage || form.image) && (
               <div className="preview-container">
                 <img src={selectedImage || form.image} alt="Preview" className="preview-image" />
-                <button type="button" onClick={() => { setSelectedImage(null); setSelectedImageName(""); setForm({ ...form, image: null }); }} className="btn-remove">✖ Eliminar imagen</button>
+                <button
+                  type="button"
+                  onClick={() => { setSelectedImage(null); setSelectedImageName(""); setForm({ ...form, image: null }); }}
+                  className="btn-remove"
+                >
+                  <Icons.X size={14} />
+                  Eliminar imagen
+                </button>
               </div>
             )}
           </div>
 
           <div className="btn-group">
-            <button type="submit" className="btn-primary">{editing ? "Actualizar" : "Crear"}</button>
-            {editing && (<button type="button" onClick={resetForm} className="btn-secondary">Cancelar</button>)}
+            <button type="submit" className="btn-primary">
+              {editing ? "Actualizar" : "Crear"}
+            </button>
+            {editing && (
+              <button type="button" onClick={resetForm} className="btn-secondary">
+                Cancelar
+              </button>
+            )}
           </div>
         </form>
       </div>
 
-      <h3>📋 Lista de productos</h3>
+      <h3>Lista de productos</h3>
       {products.length === 0 && (
         <EmptyState
-          icon="📦"
+          icon={<Icons.Package size={32} />}
           title="No hay productos"
           description="Agrega tu primer producto usando el formulario de arriba."
         />
@@ -118,12 +156,16 @@ export default function Products() {
             )}
             <div className="product-info">
               <strong>{product.name}</strong>
-              <div className="product-price">💰 ${product.price.toLocaleString()}</div>
-              <div className="product-stock">📦 Stock: {product.stock || 0} uds</div>
+              <div className="product-price">${product.price.toLocaleString()}</div>
+              <div className="product-stock">Stock: {product.stock || 0} uds</div>
             </div>
             <div className="product-actions">
-              <button className="btn-edit" onClick={() => handleEdit(product)}>✏️</button>
-              <button className="btn-delete" onClick={() => handleDelete(product.id)}>🗑️</button>
+              <button className="btn-edit" onClick={() => handleEdit(product)}>
+                <Icons.Edit size={16} />
+              </button>
+              <button className="btn-delete" onClick={() => handleDelete(product.id)}>
+                <Icons.Trash size={16} />
+              </button>
             </div>
           </div>
         ))}

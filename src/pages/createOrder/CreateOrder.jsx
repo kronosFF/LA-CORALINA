@@ -5,6 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { ClientContext } from "../../context/ClientContext";
 import { useToast } from "../../context/ToastContext";
 import { useDebounce } from "../../hooks/useDebounce";
+import Icons from "../../components/icons/Icons";
 import "./CreateOrder.css";
 
 export default function CreateOrder() {
@@ -26,10 +27,10 @@ export default function CreateOrder() {
   const [paymentProofName, setPaymentProofName] = useState("");
   const [creditType, setCreditType] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("pendiente");
-  
+
   const sellers = users.filter(u => u.role === "vendedor" && u.active !== false);
 
-  // ⚡ DEBOUNCE: Optimización de búsqueda
+  // Debounce: Optimización de búsqueda
   const debouncedClientSearch = useDebounce(clientSearch, 300);
   const debouncedProductSearch = useDebounce(search, 300);
 
@@ -61,26 +62,26 @@ export default function CreateOrder() {
   };
 
   const handleSubmit = async () => {
-    if (!client.name || !client.phone || !client.address) { addToast("❌ Selecciona o crea un cliente", "error"); return; }
-    if (items.length === 0) { addToast("❌ Agrega productos al pedido", "error"); return; }
+    if (!client.name || !client.phone || !client.address) { addToast("Selecciona o crea un cliente", "error"); return; }
+    if (items.length === 0) { addToast("Agrega productos al pedido", "error"); return; }
 
     for (const item of items) {
       const product = products.find((p) => p.id === item.id);
-      if (!product) { addToast(`❌ Producto ${item.name} no encontrado`, "error"); return; }
-      if (product.stock < item.qty) { addToast(`❌ Stock insuficiente para ${product.name}. Disponible: ${product.stock}`, "error"); return; }
+      if (!product) { addToast(`Producto ${item.name} no encontrado`, "error"); return; }
+      if (product.stock < item.qty) { addToast(`Stock insuficiente para ${product.name}. Disponible: ${product.stock}`, "error"); return; }
     }
 
     let sellerId, sellerName;
-    if (user?.role === "vendedor") { sellerId = user.id; sellerName = user.name; } 
+    if (user?.role === "vendedor") { sellerId = user.id; sellerName = user.name; }
     else {
-      if (!selectedSellerId) { addToast("❌ Debes seleccionar un vendedor", "error"); return; }
+      if (!selectedSellerId) { addToast("Debes seleccionar un vendedor", "error"); return; }
       const selectedSeller = users.find(s => s.id === selectedSellerId);
-      if (!selectedSeller) { addToast("❌ Vendedor no válido", "error"); return; }
+      if (!selectedSeller) { addToast("Vendedor no válido", "error"); return; }
       sellerId = selectedSeller.id; sellerName = selectedSeller.name;
     }
 
-    if (paymentMethod && paymentMethod.includes("credito") && !creditType) { addToast("❌ Selecciona el tipo de crédito", "error"); return; }
-    if (paymentMethod && (paymentMethod === "nequi" || paymentMethod === "llave" || paymentMethod === "transferencia") && !paymentProof) { addToast("❌ Debes subir el comprobante de pago", "error"); return; }
+    if (paymentMethod && paymentMethod.includes("credito") && !creditType) { addToast("Selecciona el tipo de crédito", "error"); return; }
+    if (paymentMethod && (paymentMethod === "nequi" || paymentMethod === "llave" || paymentMethod === "transferencia") && !paymentProof) { addToast("Debes subir el comprobante de pago", "error"); return; }
 
     let clientId = client.id;
     if (!clientId) {
@@ -106,9 +107,9 @@ export default function CreateOrder() {
     });
 
     if (clientId) await updateLastOrderDate(clientId, new Date());
-    if (user?.role !== "vendedor" && sellerId) { await sendNotification(sellerId, "📦 Nuevo pedido asignado", `Tienes un nuevo pedido para ${client.name} por $${total.toLocaleString()}`, null); }
-    
-    addToast(`✅ Pedido creado. Vendedor: ${sellerName}`, "success");
+    if (user?.role !== "vendedor" && sellerId) { await sendNotification(sellerId, "Nuevo pedido asignado", `Tienes un nuevo pedido para ${client.name} por $${total.toLocaleString()}`, null); }
+
+    addToast(`Pedido creado. Vendedor: ${sellerName}`, "success");
 
     setClient({ id: null, name: "", phone: "", address: "", location: "", notes: "", prepMinutes: 15, deliveryMinutes: 30 });
     setClientSearch(""); setItems([]); setSelectedSellerId(""); setPaymentMethod(""); setPaymentProof(null);
@@ -116,40 +117,43 @@ export default function CreateOrder() {
   };
 
   const paymentMethods = [
-    { value: "efectivo", label: "💵 Efectivo" }, { value: "nequi", label: "📱 Nequi" },
-    { value: "llave", label: "🔑 Llave" }, { value: "transferencia", label: "🏦 Transferencia" },
-    { value: "credito_empresa", label: "🏢 Crédito empresa" }, { value: "credito_vendedor", label: "👤 Crédito vendedor" },
-    { value: "otros", label: "📌 Otros" },
+    { value: "efectivo", label: "Efectivo" },
+    { value: "nequi", label: "Nequi" },
+    { value: "llave", label: "Llave" },
+    { value: "transferencia", label: "Transferencia" },
+    { value: "credito_empresa", label: "Crédito empresa" },
+    { value: "credito_vendedor", label: "Crédito vendedor" },
+    { value: "otros", label: "Otros" },
   ];
   const creditTypes = [{ value: "empresa", label: "Crédito empresa" }, { value: "vendedor", label: "Crédito vendedor" }];
 
   return (
     <div className="create-order-page">
-      <h1>➕ Crear Pedido</h1>
+      <h1>Crear Pedido</h1>
       <div className="create-order-layout">
         <>
           {user?.role !== "vendedor" && (
             <div className="co-card">
-              <h3>👤 Asignar a vendedor</h3>
+              <h3><Icons.User size={18} /> Asignar a vendedor</h3>
               <select value={selectedSellerId} onChange={(e) => setSelectedSellerId(e.target.value)} className="co-input" required>
                 <option value="">Seleccionar vendedor</option>
-                {sellers.map(s => (<option key={s.id} value={s.id}>{s.name} {s.photo && "📷"}</option>))}
+                {sellers.map(s => (<option key={s.id} value={s.id}>{s.name}</option>))}
               </select>
             </div>
           )}
 
           <div className="co-card">
-            <h3>📇 Cliente</h3>
+            <h3><Icons.Clients size={18} /> Cliente</h3>
             <input placeholder="Buscar cliente por nombre o teléfono..." value={clientSearch} onChange={(e) => setClientSearch(e.target.value)} className="co-input" />
             {debouncedClientSearch && (
               <div className="co-dropdown">
                 {clients.filter((c) => { const term = debouncedClientSearch.toLowerCase(); return (c.name || "").toLowerCase().includes(term) || (c.phone || "").includes(debouncedClientSearch); }).length === 0 ? (
-                  <div className="co-dropdown-item" style={{color: "#94a3b8"}}>Creando nuevo cliente...</div>
+                  <div className="co-dropdown-item" style={{ color: "#94a3b8" }}>Creando nuevo cliente...</div>
                 ) : (
                   clients.filter((c) => { const term = debouncedClientSearch.toLowerCase(); return (c.name || "").toLowerCase().includes(term) || (c.phone || "").includes(debouncedClientSearch); }).map((c) => (
                     <div key={c.id} className="co-dropdown-item" onClick={() => selectClient(c)}>
                       <span>{c.name} - {c.phone}</span>
-                      <span className="co-dropdown-meta">⏱️ {c.prepMinutes || 15}m • 🚚 {c.deliveryMinutes || 30}m</span>
+                      <span className="co-dropdown-meta">{c.prepMinutes || 15}m • {c.deliveryMinutes || 30}m</span>
                     </div>
                   ))
                 )}
@@ -158,17 +162,17 @@ export default function CreateOrder() {
             {client.name && (
               <div className="co-client-box">
                 <strong>{client.name}</strong>
-                <div>📞 {client.phone}</div>
-                <div>📍 {client.address}</div>
-                {client.location && <div>🏠 {client.location}</div>}
-                {client.notes && <div className="co-client-notes">📝 {client.notes}</div>}
-                <div className="co-client-meta">⏱️ Prep: {client.prepMinutes || 15} min • 🚚 Rep: {client.deliveryMinutes || 30} min</div>
+                <div>{client.phone}</div>
+                <div>{client.address}</div>
+                {client.location && <div>{client.location}</div>}
+                {client.notes && <div className="co-client-notes">{client.notes}</div>}
+                <div className="co-client-meta">Prep: {client.prepMinutes || 15} min • Rep: {client.deliveryMinutes || 30} min</div>
               </div>
             )}
           </div>
 
           <div className="co-card">
-            <h3>💰 Forma de pago</h3>
+            <h3><Icons.Money size={18} /> Forma de pago</h3>
             <div className="co-payment-grid">
               {paymentMethods.map((method) => (
                 <label key={method.value} className={`co-payment-label ${paymentMethod === method.value ? "selected" : ""}`}>
@@ -190,21 +194,24 @@ export default function CreateOrder() {
             <div className="co-sub-group">
               <label className="co-label-small">Estado del pago</label>
               <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)} className="co-input">
-                <option value="pendiente">⏳ Pendiente</option>
-                <option value="pagado">✅ Pagado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="pagado">Pagado</option>
               </select>
             </div>
             {(paymentMethod === "nequi" || paymentMethod === "llave" || paymentMethod === "transferencia") && (
               <div className="co-sub-group">
-                <label className="co-label-small">📎 Comprobante de pago</label>
+                <label className="co-label-small">Comprobante de pago</label>
                 <div className="co-file-wrapper">
-                  <label className="co-file-label">📎 Seleccionar archivo<input type="file" accept="image/*" onChange={handlePaymentProofUpload} className="co-file-hidden" /></label>
+                  <label className="co-file-label">
+                    Seleccionar archivo
+                    <input type="file" accept="image/*" onChange={handlePaymentProofUpload} className="co-file-hidden" />
+                  </label>
                   {paymentProofName && <span className="co-file-name">{paymentProofName}</span>}
                 </div>
                 {paymentProof && (
                   <div className="co-preview">
                     <img src={paymentProof} alt="Comprobante" className="co-preview-img" />
-                    <button type="button" onClick={() => { setPaymentProof(null); setPaymentProofName(""); }} className="co-btn-remove-proof">✖ Eliminar</button>
+                    <button type="button" onClick={() => { setPaymentProof(null); setPaymentProofName(""); }} className="co-btn-remove-proof">Eliminar</button>
                   </div>
                 )}
               </div>
@@ -214,12 +221,12 @@ export default function CreateOrder() {
 
         <>
           <div className="co-card">
-            <h3>📦 Productos</h3>
+            <h3><Icons.Package size={18} /> Productos</h3>
             <input placeholder="Buscar producto..." value={search} onChange={(e) => setSearch(e.target.value)} className="co-input" />
             {debouncedProductSearch && !selectedProduct && (
               <div className="co-dropdown">
                 {filteredProducts.length === 0 ? (
-                  <div className="co-dropdown-item" style={{color: "#94a3b8"}}>Sin resultados...</div>
+                  <div className="co-dropdown-item" style={{ color: "#94a3b8" }}>Sin resultados...</div>
                 ) : (
                   filteredProducts.map((p) => (
                     <div key={p.id} className="co-dropdown-item" onClick={() => selectProduct(p)}>
@@ -250,7 +257,7 @@ export default function CreateOrder() {
 
           <div className="co-card co-summary-card co-col-summary">
             <h3>Total: ${items.reduce((acc, i) => acc + i.price * i.qty, 0).toLocaleString()}</h3>
-            <button onClick={handleSubmit} className="co-btn-submit">🚀 Guardar Pedido</button>
+            <button onClick={handleSubmit} className="co-btn-submit">Guardar Pedido</button>
           </div>
         </>
       </div>

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import Icons from "../icons/Icons"; // 🆕 Importamos el componente central
 import logo from "../../assets/logoCoralina.png";
-import './Sidebar.css'; // <-- Importamos el CSS
+import './Sidebar.css';
 
 export default function Sidebar({ closeSidebar }) {
   const navigate = useNavigate();
@@ -37,21 +38,25 @@ export default function Sidebar({ closeSidebar }) {
         {/* NAVEGACIÓN */}
         <nav className="sidebar-nav">
           <button className="sidebar-nav-btn" onClick={() => go("/")}>
-            📊 Dashboard
+            <Icons.Dashboard />
+            Dashboard
           </button>
 
           <button className="sidebar-nav-btn" onClick={() => go("/pedidos")}>
-            📦 Pedidos
+            <Icons.Orders />
+            Pedidos
           </button>
 
           <button className="sidebar-nav-btn" onClick={() => go("/crear")}>
-            ➕ Crear Pedido
+            <Icons.CreateOrder />
+            Crear Pedido
           </button>
 
           {/* Gastos - solo para vendedores */}
           {isVendedor && (
             <button className="sidebar-nav-btn" onClick={() => go("/gastos")}>
-              💰 Mis Gastos
+              <Icons.Expenses />
+              Mis Gastos
             </button>
           )}
 
@@ -59,19 +64,23 @@ export default function Sidebar({ closeSidebar }) {
           {isAdminOrPlanta && (
             <>
               <button className="sidebar-nav-btn" onClick={() => go("/productos")}>
-                🏷️ Productos
+                <Icons.Products />
+                Productos
               </button>
 
               <button className="sidebar-nav-btn" onClick={() => go("/clientes")}>
-                👥 Clientes
+                <Icons.Clients />
+                Clientes
               </button>
 
               <button className="sidebar-nav-btn" onClick={() => go("/stock")}>
-                🏭 Stock
+                <Icons.Stock />
+                Stock
               </button>
 
               <button className="sidebar-nav-btn" onClick={() => go("/usuarios")}>
-                👤 Usuarios
+                <Icons.Users />
+                Usuarios
               </button>
             </>
           )}
@@ -80,7 +89,8 @@ export default function Sidebar({ closeSidebar }) {
         {/* LOGOUT */}
         <div className="sidebar-logout-container">
           <button onClick={handleLogout} className="sidebar-logout-btn">
-            🚪 Cerrar sesión
+            <Icons.Logout />
+            Cerrar sesión
           </button>
         </div>
       </div>

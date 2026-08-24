@@ -21,7 +21,7 @@
   color: var(--text-dark);
 }
 
-.stock-page > h1 {
+.stock-page>h1 {
   font-size: clamp(24px, 4vw, 32px);
   font-weight: 800;
   margin-bottom: 24px;
@@ -32,21 +32,21 @@
   background: var(--bg-card);
   padding: 24px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 32px;
   border: 1px solid var(--border);
-  border-top: 5px solid var(--primary); /* Acento azul por defecto */
+  border-top: 5px solid var(--primary);
 }
 
 .stock-section.bottles-section {
-  border-top-color: #06b6d4; /* Acento cian para botellones */
+  border-top-color: #06b6d4;
 }
 
 .stock-section.history-section {
-  border-top-color: #8b5cf6; /* Acento morado para historial */
+  border-top-color: #8b5cf6;
 }
 
-.stock-section > h2 {
+.stock-section>h2 {
   font-size: 20px;
   font-weight: 800;
   margin-bottom: 20px;
@@ -76,6 +76,10 @@
   color: var(--text-medium);
   transition: all 0.3s ease;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .stock-tab.active {
@@ -93,7 +97,7 @@
   border: 1px solid var(--border);
 }
 
-.stock-inner-card > h3 {
+.stock-inner-card>h3 {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -124,8 +128,14 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-textarea.stock-input { resize: vertical; min-height: 60px; }
-select.stock-input { cursor: pointer; }
+textarea.stock-input {
+  resize: vertical;
+  min-height: 60px;
+}
+
+select.stock-input {
+  cursor: pointer;
+}
 
 .stock-btn-primary {
   padding: 14px;
@@ -139,9 +149,15 @@ select.stock-input { cursor: pointer; }
   transition: all 0.2s;
 }
 
-.stock-btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.stock-btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
 
 .stock-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 600;
@@ -153,7 +169,9 @@ select.stock-input { cursor: pointer; }
   transition: all 0.2s;
 }
 
-.stock-btn-secondary:hover { background: #475569; }
+.stock-btn-secondary:hover {
+  background: #475569;
+}
 
 /* === GRIDS DE INVENTARIO Y DEUDAS === */
 .stock-grid {
@@ -169,11 +187,13 @@ select.stock-input { cursor: pointer; }
   border-radius: 14px;
   text-align: center;
   border: 1px solid var(--border);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   transition: transform 0.2s;
 }
 
-.stock-product-card:hover { transform: translateY(-2px); }
+.stock-product-card:hover {
+  transform: translateY(-2px);
+}
 
 .stock-product-card h4 {
   font-size: 14px;
@@ -190,10 +210,17 @@ select.stock-input { cursor: pointer; }
   line-height: 1;
 }
 
-/* Semáforos de Stock */
-.stock-high { color: var(--success); }
-.stock-medium { color: var(--warning); }
-.stock-low { color: var(--danger); }
+.stock-high {
+  color: var(--success);
+}
+
+.stock-medium {
+  color: var(--warning);
+}
+
+.stock-low {
+  color: var(--danger);
+}
 
 .stock-price {
   color: var(--text-light);
@@ -211,8 +238,16 @@ select.stock-input { cursor: pointer; }
   border: 1px solid var(--border);
 }
 
-.debt-card h4 { margin-bottom: 12px; font-size: 15px; }
-.debt-card p { font-size: 13px; color: var(--text-medium); margin-bottom: 4px; }
+.debt-card h4 {
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.debt-card p {
+  font-size: 13px;
+  color: var(--text-medium);
+  margin-bottom: 4px;
+}
 
 .debt-status {
   font-size: 18px;
@@ -220,8 +255,13 @@ select.stock-input { cursor: pointer; }
   margin-top: 8px;
 }
 
-.debt-pending { color: var(--danger); }
-.debt-clear { color: var(--success); }
+.debt-pending {
+  color: var(--danger);
+}
+
+.debt-clear {
+  color: var(--success);
+}
 
 /* === FILTROS === */
 .stock-filters {
@@ -250,13 +290,21 @@ select.stock-input { cursor: pointer; }
   border-radius: 12px;
   margin-bottom: 12px;
   border: 1px solid var(--border);
-  border-left: 5px solid var(--text-light); /* Borde neutro por defecto */
+  border-left: 5px solid var(--text-light);
   transition: box-shadow 0.2s;
 }
 
-.movement-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-.movement-card.movement-out { border-left-color: var(--danger); }
-.movement-card.movement-in { border-left-color: var(--success); }
+.movement-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.movement-card.movement-out {
+  border-left-color: var(--danger);
+}
+
+.movement-card.movement-in {
+  border-left-color: var(--success);
+}
 
 .movement-header {
   display: flex;
@@ -266,7 +314,10 @@ select.stock-input { cursor: pointer; }
   gap: 8px;
 }
 
-.movement-product { font-size: 15px; font-weight: 700; }
+.movement-product {
+  font-size: 15px;
+  font-weight: 700;
+}
 
 .movement-badge {
   padding: 4px 10px;
@@ -276,16 +327,28 @@ select.stock-input { cursor: pointer; }
   margin-left: 8px;
 }
 
-.badge-in { background: #dcfce7; color: #15803d; }
-.badge-out { background: #fee2e2; color: #b91c1c; }
+.badge-in {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-out {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
 .movement-qty {
   font-weight: 800;
   font-size: 20px;
 }
 
-.qty-in { color: var(--success); }
-.qty-out { color: var(--danger); }
+.qty-in {
+  color: var(--success);
+}
+
+.qty-out {
+  color: var(--danger);
+}
 
 .movement-comment {
   font-size: 13px;
@@ -305,13 +368,14 @@ select.stock-input { cursor: pointer; }
 }
 
 /* ==========================================
-   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   📱 RESPONSIVE
    ========================================== */
 
 @media (min-width: 640px) {
   .stock-form {
-    grid-template-columns: 1fr 1fr; /* Formularios a 2 columnas */
+    grid-template-columns: 1fr 1fr;
   }
+
   .stock-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
@@ -319,9 +383,9 @@ select.stock-input { cursor: pointer; }
 
 @media (min-width: 900px) {
   .stock-form {
-    grid-template-columns: 1fr 1fr 1fr; /* 3 columnas en PC para forms largos */
+    grid-template-columns: 1fr 1fr 1fr;
   }
-  /* El textarea y el botón ocupan toda la fila en PC */
+
   .stock-form .full-width {
     grid-column: 1 / -1;
   }

@@ -21,13 +21,13 @@
   color: var(--text-dark);
 }
 
-.products-page > h1 {
+.products-page>h1 {
   font-size: clamp(24px, 4vw, 32px);
   font-weight: 800;
   margin-bottom: 24px;
 }
 
-.products-page > h3 {
+.products-page>h3 {
   font-size: 20px;
   font-weight: 700;
   margin-top: 40px;
@@ -40,17 +40,20 @@
   background: var(--bg-card);
   padding: 24px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
   border: 1px solid var(--border);
 }
 
-.products-form-card > h3 {
+.products-form-card>h3 {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 20px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Grid para el formulario */
@@ -60,8 +63,8 @@
   gap: 16px;
 }
 
-.products-form > .photo-container,
-.products-form > .btn-group {
+.products-form>.photo-container,
+.products-form>.btn-group {
   grid-column: 1 / -1;
 }
 
@@ -101,6 +104,9 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .file-upload-wrapper {
@@ -124,10 +130,18 @@
   transition: background 0.2s;
 }
 
-.file-upload-label:hover { background: var(--primary-hover); }
+.file-upload-label:hover {
+  background: var(--primary-hover);
+}
 
-.file-input-hidden { display: none; }
-.file-name { font-size: 12px; color: var(--text-light); }
+.file-input-hidden {
+  display: none;
+}
+
+.file-name {
+  font-size: 12px;
+  color: var(--text-light);
+}
 
 .preview-container {
   display: flex;
@@ -146,10 +160,13 @@
   object-fit: cover;
   border-radius: 12px;
   border: 2px solid var(--border);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .btn-remove {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 14px;
   background: transparent;
   border: 1.5px solid var(--danger);
@@ -161,7 +178,10 @@
   transition: all 0.2s;
 }
 
-.btn-remove:hover { background: var(--danger); color: #fff; }
+.btn-remove:hover {
+  background: var(--danger);
+  color: #fff;
+}
 
 /* === BOTONES DEL FORMULARIO === */
 .btn-group {
@@ -170,7 +190,8 @@
   margin-top: 8px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   flex: 1;
   padding: 14px;
   font-size: 15px;
@@ -185,13 +206,20 @@
   background: var(--primary);
   color: #fff;
 }
-.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
 
 .btn-secondary {
   background: var(--border);
   color: var(--text-medium);
 }
-.btn-secondary:hover { background: #cbd5e1; }
+
+.btn-secondary:hover {
+  background: #cbd5e1;
+}
 
 /* === GRID DE PRODUCTOS === */
 .products-grid {
@@ -215,7 +243,7 @@
 
 .product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
 .product-image-container {
@@ -267,7 +295,8 @@
   flex-shrink: 0;
 }
 
-.btn-edit, .btn-delete {
+.btn-edit,
+.btn-delete {
   padding: 8px 12px;
   border-radius: 10px;
   border: none;
@@ -284,35 +313,44 @@
   border: 1.5px solid var(--warning);
   color: var(--warning);
 }
-.btn-edit:hover { background: var(--warning); color: #fff; }
+
+.btn-edit:hover {
+  background: var(--warning);
+  color: #fff;
+}
 
 .btn-delete {
   background: transparent;
   border: 1.5px solid var(--danger);
   color: var(--danger);
 }
-.btn-delete:hover { background: var(--danger); color: #fff; }
+
+.btn-delete:hover {
+  background: var(--danger);
+  color: #fff;
+}
 
 /* ==========================================
-   📱 MAGICIA RESPONSIVE (MEDIA QUERIES)
+   📱 RESPONSIVE
    ========================================== */
 
 @media (min-width: 640px) {
   .products-form {
-    grid-template-columns: 1fr 1fr; /* Nombre y precio en la misma fila */
+    grid-template-columns: 1fr 1fr;
   }
+
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Múltiples columnas automáticas */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  /* En PC, imagen del producto más grande y redondeada */
   .product-image-container {
     width: 90px;
     height: 90px;
   }
+
   .product-img {
-    border-radius: 50%; /* Imagen circular en PC para darle un toque elegante */
+    border-radius: 50%;
   }
 }

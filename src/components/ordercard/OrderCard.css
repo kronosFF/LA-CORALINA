@@ -222,7 +222,8 @@
   border: 1px solid #cbd5f5;
   outline: none;
   font-size: 14px;
-  box-sizing: border-box; /* Para que el width 100% funcione bien con padding */
+  box-sizing: border-box;
+  /* Para que el width 100% funcione bien con padding */
 }
 
 .form-input.textarea {
@@ -342,4 +343,21 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
+}
+
+/* === ICONOS EN TARJETAS === */
+.warning-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.card-header .chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

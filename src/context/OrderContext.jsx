@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useRef } from "react";
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   doc,
   query,
   orderBy,
@@ -65,10 +65,10 @@ export function OrderProvider({ children }) {
 
   const addOrder = async (order) => {
     const numericId = await getNextNumericId();
-    await addDoc(collection(db, "orders"), { 
-      ...order, 
-      numericId, 
-      createdAt: new Date(), 
+    await addDoc(collection(db, "orders"), {
+      ...order,
+      numericId,
+      createdAt: new Date(),
       timestamps: { preparacion: new Date() },
       paymentStatus: order.paymentMethod?.includes("credito") ? "credito" : "pendiente",
       paymentMethod: order.paymentMethod || null,
@@ -126,8 +126,8 @@ export function OrderProvider({ children }) {
   };
 
   const getActiveCredits = () => {
-    return orders.filter(o => 
-      o.paymentStatus === "credito" && 
+    return orders.filter(o =>
+      o.paymentStatus === "credito" &&
       (o.totalPaid || 0) < (o.total || 0)
     ).sort((a, b) => (b.createdAt?.toDate?.() || new Date(b.createdAt)) - (a.createdAt?.toDate?.() || new Date(a.createdAt)));
   };
@@ -151,7 +151,7 @@ export function OrderProvider({ children }) {
   // ✅ REGISTRAR GASTO
   const addExpense = async (sellerId, sellerName, concept, amount, category, comment, receipt) => {
     console.log("📝 Registrando gasto:", { sellerId, sellerName, concept, amount, category });
-    
+
     if (!concept || !amount || !category) {
       alert("❌ Completa los campos requeridos");
       return false;
@@ -168,7 +168,7 @@ export function OrderProvider({ children }) {
         receipt: receipt || null,
         date: new Date(),
       };
-      
+
       await addDoc(collection(db, "expenses"), expenseData);
       alert("✅ Gasto registrado");
       return true;
@@ -183,28 +183,26 @@ export function OrderProvider({ children }) {
   const getExpenses = async (filters = {}) => {
     try {
       let q;
-      
-      // Si hay filtro por sellerId, NO usar orderBy (para no requerir índice)
+
       if (filters.sellerId) {
         q = query(collection(db, "expenses"), where("sellerId", "==", filters.sellerId));
       } else {
         q = query(collection(db, "expenses"), orderBy("date", "desc"));
       }
-      
+
       if (filters.startDate) {
         q = query(q, where("date", ">=", filters.startDate));
       }
       if (filters.endDate) {
         q = query(q, where("date", "<=", filters.endDate));
       }
-      
+
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => {
         list.push({ id: doc.id, ...doc.data() });
       });
-      
-      // Ordenar manualmente si filtramos por sellerId
+
       if (filters.sellerId) {
         list.sort((a, b) => {
           const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date);
@@ -212,7 +210,7 @@ export function OrderProvider({ children }) {
           return dateB - dateA;
         });
       }
-      
+
       console.log("📋 Gastos encontrados:", list.length);
       return list;
     } catch (error) {
@@ -263,7 +261,7 @@ export function OrderProvider({ children }) {
     const current = order.status;
     const ts = order.timestamps || {};
     let update = {};
-    
+
     if (current === "preparacion" && newStatus === "reparto") update = { status: "reparto", timestamps: { ...ts, reparto: new Date() } };
     else if (current === "reparto" && newStatus === "entregado") update = { status: "entregado", timestamps: { ...ts, entregado: new Date() } };
     else if (role !== "vendedor") {
@@ -274,21 +272,58 @@ export function OrderProvider({ children }) {
     setTimeout(() => locks.current.delete(id), 300);
   };
 
+  // 🔥 CORREGIDO: Ahora CANCELA (cambia estado) en lugar de ELIMINAR
   const cancelOrder = async (id, user, productCtx) => {
     const order = orders.find(o => o.id === id);
-    if (!order || order.status === "entregado") return alert("No se puede cancelar");
-    if (order.items) await productCtx.returnStockFromOrder(order.items, user);
-    await deleteDoc(doc(db, "orders", id));
-    alert("✅ Pedido cancelado");
+    if (!order) {
+      alert("❌ Pedido no encontrado");
+      return;
+    }
+
+    if (order.status === "entregado") {
+      alert("❌ No se puede cancelar un pedido ya entregado");
+      return;
+    }
+
+    if (order.status === "cancelado") {
+      alert("❌ Este pedido ya está cancelado");
+      return;
+    }
+
+    if (!confirm(`¿Cancelar pedido #${order.numericId || order.id.slice(-6)}? Se devolverá el stock.`)) {
+      return;
+    }
+
+    try {
+      // Devolver stock si tiene productos
+      if (order.items && productCtx) {
+        await productCtx.returnStockFromOrder(order.items, user);
+      }
+
+      // 🔥 NUEVO: En lugar de eliminar, CAMBIAMOS el estado a "cancelado"
+      const orderRef = doc(db, "orders", id);
+      await updateDoc(orderRef, {
+        status: "cancelado",
+        timestamps: {
+          ...(order.timestamps || {}),
+          cancelado: new Date()
+        }
+      });
+
+      alert("✅ Pedido cancelado correctamente");
+    } catch (error) {
+      console.error("Error al cancelar pedido:", error);
+      alert("❌ Error al cancelar pedido");
+    }
   };
 
   return (
-    <OrderContext.Provider value={{ 
-      orders, 
+    <OrderContext.Provider value={{
+      orders,
       expenses,
       payments,
-      addOrder, 
-      updateStatus, 
+      addOrder,
+      updateStatus,
       cancelOrder,
       updatePayment,
       addExpense,

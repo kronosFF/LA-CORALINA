@@ -1,7 +1,6 @@
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import './Header.css'; // <-- Importamos los estilos
-
+import { AuthContext } from "../../context/AuthContext";
+import './Header.css';
 export default function Header() {
   const { user, logout } = useContext(AuthContext);
 
