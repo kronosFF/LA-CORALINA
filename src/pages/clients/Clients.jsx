@@ -1,8 +1,9 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useMemo } from "react";
 import { ClientContext } from "../../context/ClientContext";
 import { AuthContext } from "../../context/AuthContext";
 import { OrderContext } from "../../context/OrderContext";
 import { useToast } from "../../context/ToastContext";
+import { useDebounce } from "../../hooks/useDebounce";
 import Icons from "../../components/icons/Icons";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import "./Clients.css";
@@ -13,6 +14,7 @@ export default function Clients() {
   const { orders, registerPayment } = useContext(OrderContext);
   const { addToast } = useToast();
 
+  // Estado del formulario
   const [form, setForm] = useState({
     id: null, name: "", phone: "", address: "", location: "", notes: "", email: "", alertDays: "", prepMinutes: "15", deliveryMinutes: "30", photo: null,
   });
@@ -20,6 +22,11 @@ export default function Clients() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [selectedPhotoName, setSelectedPhotoName] = useState("");
   const fileInputRef = useRef(null);
+
+  // 🔥 ESTADOS NUEVOS: BÚSQUEDA Y EXPANSIÓN
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const [expandedClientId, setExpandedClientId] = useState(null);
 
   // Estados para el modal de abonos rápidos
   const [payingClient, setPayingClient] = useState(null);
@@ -61,6 +68,7 @@ export default function Clients() {
   const handleEdit = (client) => {
     setForm({ id: client.id, name: client.name, phone: client.phone, address: client.address || "", location: client.location || "", notes: client.notes || "", email: client.email || "", alertDays: client.alertDays || "", prepMinutes: client.prepMinutes || "15", deliveryMinutes: client.deliveryMinutes || "30", photo: client.photo || null });
     setSelectedPhoto(client.photo || null); setEditing(true);
+    setExpandedClientId(null); // Cerrar expansión al editar
   };
 
   const handleDelete = (id) => { deleteClient(id); addToast("Cliente eliminado", "success"); };
@@ -127,9 +135,26 @@ export default function Clients() {
     { value: "transferencia", label: "Transferencia" },
   ];
 
+  // 🔥 FILTRADO CON DEBOUNCE (optimizado)
+  const filteredClients = useMemo(() => {
+    if (!debouncedSearch.trim()) return clients;
+    const term = debouncedSearch.toLowerCase().trim();
+    return clients.filter(c =>
+      c.name?.toLowerCase().includes(term) ||
+      c.phone?.includes(term) ||
+      c.address?.toLowerCase().includes(term)
+    );
+  }, [clients, debouncedSearch]);
+
+  // 🔥 Alternar expansión de tarjeta (solo una a la vez)
+  const toggleExpand = (clientId) => {
+    setExpandedClientId(expandedClientId === clientId ? null : clientId);
+  };
+
   return (
     <div className="clients-page">
       <h1>Clientes</h1>
+
       <div className="clients-form-card">
         <h3>{editing ? "Editar cliente" : "Nuevo cliente"}</h3>
         <form onSubmit={handleSubmit} className="clients-form">
@@ -180,49 +205,144 @@ export default function Clients() {
         </form>
       </div>
 
-      <h3 className="clients-subtitle">Lista de clientes</h3>
-      {clients.length === 0 && (<EmptyState icon={<Icons.Clients size={32} />} title="Sin clientes registrados" description="Agrega tu primer cliente usando el formulario de arriba." />)}
+      <div className="clients-list-header">
+        <h3 className="clients-subtitle">Lista de clientes</h3>
+        <span className="clients-count">{filteredClients.length} clientes</span>
+      </div>
 
+      {/* 🔥 BUSCADOR */}
+      <div className="clients-search-container">
+        <div className="clients-search-box">
+          <Icons.Search size={18} />
+          <input
+            type="text"
+            placeholder="Buscar cliente por nombre, teléfono o dirección..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="clients-search-input"
+          />
+          {searchTerm && (
+            <button className="clients-search-clear" onClick={() => setSearchTerm("")}>
+              <Icons.X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {filteredClients.length === 0 && (
+        <EmptyState
+          icon={<Icons.Clients size={32} />}
+          title={searchTerm ? "No se encontraron clientes" : "Sin clientes registrados"}
+          description={searchTerm ? "Prueba con otros términos de búsqueda" : "Agrega tu primer cliente usando el formulario de arriba."}
+        />
+      )}
+
+      {/* 🔥 GRID DE CLIENTES (TARJETAS COMPACTAS) */}
       <div className="clients-grid">
-        {clients.map((client) => {
+        {filteredClients.map((client) => {
+          const isExpanded = expandedClientId === client.id;
           const inactiveStatus = getInactiveStatus(client);
           const clientDebt = getClientDebt(client.id);
 
           return (
-            <div key={client.id} className={`clients-card ${inactiveStatus?.isInactive ? "inactive" : ""}`}>
-              {client.photo && (<div className="clients-photo-small"><img src={client.photo} alt={client.name} className="clients-small-image" /></div>)}
-              <div className="clients-info">
-                <div className="clients-header">
-                  <span className="clients-name">{client.name}</span>
-                  {inactiveStatus?.isInactive && (<span className="clients-badge">{inactiveStatus.daysDiff} días sin pedir</span>)}
-                  {clientDebt > 0 && <span className="clients-badge debt-badge">Debe: ${clientDebt.toLocaleString()}</span>}
+            <div
+              key={client.id}
+              className={`clients-card-compact ${isExpanded ? "expanded" : ""} ${inactiveStatus?.isInactive ? "inactive" : ""}`}
+              onClick={() => toggleExpand(client.id)}
+            >
+              {/* 🔥 VISTA COMPACTA (SIEMPRE VISIBLE) */}
+              <div className="clients-compact-view">
+                <div className="clients-compact-info">
+                  {/* Foto pequeña en vista compacta */}
+                  {client.photo && (
+                    <img src={client.photo} alt={client.name} className="clients-compact-avatar" />
+                  )}
+                  <div className="clients-compact-name">
+                    <strong>{client.name}</strong>
+                    {inactiveStatus?.isInactive && (
+                      <span className="clients-badge">{inactiveStatus.daysDiff}d sin pedir</span>
+                    )}
+                    {clientDebt > 0 && (
+                      <span className="clients-badge debt-badge">Debe: ${clientDebt.toLocaleString()}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="clients-contact">
-                  <span className="clients-phone">{client.phone}</span>
-                  {client.address && <span className="clients-address">{client.address}</span>}
-                  {client.location && <span className="clients-location">{client.location}</span>}
+                <div className="clients-compact-actions">
+                  <button
+                    className="clients-btn-edit"
+                    onClick={(e) => { e.stopPropagation(); handleEdit(client); }}
+                  >
+                    <Icons.Edit size={16} />
+                  </button>
+                  <button
+                    className="clients-btn-delete"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(client.id); }}
+                  >
+                    <Icons.Trash size={16} />
+                  </button>
+                  {clientDebt > 0 && (
+                    <button
+                      className="clients-btn-pay"
+                      onClick={(e) => { e.stopPropagation(); setPayingClient(client); setClientPayAmount(""); }}
+                    >
+                      <Icons.Money size={16} />
+                    </button>
+                  )}
+                  <span className="clients-expand-icon">
+                    {isExpanded ? <Icons.Cancel size={16} /> : <Icons.Plus size={16} />}
+                  </span>
                 </div>
-                <div className="clients-times">
-                  <span className="clients-prep">Prep: {client.prepMinutes || 15} min</span>
-                  <span className="clients-delivery">Reparto: {client.deliveryMinutes || 30} min</span>
-                  {client.alertDays > 0 && (<span className="clients-alert">Alerta cada {client.alertDays} días</span>)}
-                </div>
-                {client.notes && (<div className="clients-notes"><span>{client.notes}</span></div>)}
               </div>
 
-              <div className="clients-action-buttons">
-                <button className="clients-btn-edit" onClick={() => handleEdit(client)}>
-                  <Icons.Edit size={16} />
-                </button>
-                <button className="clients-btn-delete" onClick={() => handleDelete(client.id)}>
-                  <Icons.Trash size={16} />
-                </button>
-                {clientDebt > 0 && (
-                  <button className="clients-btn-pay" onClick={() => { setPayingClient(client); setClientPayAmount(""); }}>
-                    <Icons.Money size={16} />
-                  </button>
-                )}
-              </div>
+              {/* 🔥 VISTA EXPANDIDA (SE MUESTRA AL HACER CLIC) */}
+              {isExpanded && (
+                <div className="clients-expanded-view" onClick={(e) => e.stopPropagation()}>
+                  {/* 🔥 Foto GRANDE en la vista expandida */}
+                  {client.photo && (
+                    <div className="clients-expanded-photo">
+                      <img src={client.photo} alt={client.name} className="clients-expanded-image" />
+                    </div>
+                  )}
+
+                  <div className="clients-expanded-details">
+                    <div className="clients-expanded-row">
+                      <span><strong>Teléfono:</strong> {client.phone}</span>
+                      {client.email && <span><strong>Email:</strong> {client.email}</span>}
+                    </div>
+                    {client.address && (
+                      <div className="clients-expanded-row">
+                        <span><strong>Dirección:</strong> {client.address}</span>
+                      </div>
+                    )}
+                    {client.location && (
+                      <div className="clients-expanded-row">
+                        <span><strong>Ubicación:</strong> {client.location}</span>
+                      </div>
+                    )}
+                    <div className="clients-expanded-row">
+                      <span><strong>Prep:</strong> {client.prepMinutes || 15} min</span>
+                      <span><strong>Reparto:</strong> {client.deliveryMinutes || 30} min</span>
+                      {client.alertDays > 0 && (
+                        <span><strong>Alerta:</strong> cada {client.alertDays} días</span>
+                      )}
+                    </div>
+                    {client.notes && (
+                      <div className="clients-expanded-row clients-expanded-notes">
+                        <span><strong>Notas:</strong> {client.notes}</span>
+                      </div>
+                    )}
+                    {client.lastOrderDate && (
+                      <div className="clients-expanded-row clients-expanded-last-order">
+                        <span><strong>Último pedido:</strong> {
+                          client.lastOrderDate?.toDate ?
+                            client.lastOrderDate.toDate().toLocaleDateString() :
+                            new Date(client.lastOrderDate).toLocaleDateString()
+                        }</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
@@ -230,12 +350,9 @@ export default function Clients() {
 
       {/* Modal para registrar abono rápido */}
       {payingClient && (
-        <div className="co-preview" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000 }} onClick={() => setPayingClient(null)}>
-          <div style={{ background: "#fff", borderRadius: "20px", padding: "24px", width: "90%", maxWidth: "400px" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: "10px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Icons.Money size={20} />
-              Abono a cuenta
-            </h3>
+        <div className="modal-overlay" onClick={() => setPayingClient(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title"><Icons.Money size={20} /> Abono a cuenta</h3>
             <p style={{ fontWeight: "bold", marginBottom: "5px" }}>{payingClient.name}</p>
             <p style={{ color: "#ef4444", fontWeight: "800", fontSize: "18px", marginBottom: "20px" }}>
               Deuda total: ${getClientDebt(payingClient.id).toLocaleString()}
@@ -254,8 +371,8 @@ export default function Clients() {
             </div>
 
             <div style={{ display: "flex", gap: "10px" }}>
-              <button onClick={handleClientPayment} style={{ flex: 1, padding: "12px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "10px", fontWeight: "bold", cursor: "pointer" }}>Registrar Abono</button>
-              <button onClick={() => setPayingClient(null)} style={{ flex: 1, padding: "12px", background: "#e2e8f0", color: "#334155", border: "none", borderRadius: "10px", fontWeight: "bold", cursor: "pointer" }}>Cancelar</button>
+              <button onClick={handleClientPayment} className="btn-save">Registrar Abono</button>
+              <button onClick={() => setPayingClient(null)} className="btn-cancel">Cancelar</button>
             </div>
             <p style={{ fontSize: "11px", color: "#94a3b8", marginTop: "12px", textAlign: "center" }}>
               * Se abonará al pedido más antiguo pendiente de este cliente.

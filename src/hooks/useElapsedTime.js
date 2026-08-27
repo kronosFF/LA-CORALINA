@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatDuration } from "./formatTime";
 
 export function useElapsedTime(startTime) {
   const [elapsed, setElapsed] = useState(0);
@@ -28,10 +29,7 @@ export function useElapsedTime(startTime) {
 }
 
 export function formatTime(seconds) {
-  if (isNaN(seconds) || seconds < 0) return "0m 00s";
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}m ${secs.toString().padStart(2, "0")}s`;
+  return formatDuration(seconds);
 }
 
 export function getStatusColor(elapsed, limitMinutes) {

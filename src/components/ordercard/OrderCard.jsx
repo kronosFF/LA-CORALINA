@@ -4,7 +4,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { ProductContext } from "../../context/ProductContext";
 import { useToast } from "../../context/ToastContext";
 import Icons from "../../components/icons/Icons";
-import { useElapsedTime, formatTime, getStatusColor } from "../../hooks/useElapsedTime";
+import { useElapsedTime, getStatusColor } from "../../hooks/useElapsedTime";
+import { formatDuration } from "../../hooks/formatTime";
 import './OrderCard.css';
 
 export default function OrderCard({ order }) {
@@ -133,7 +134,8 @@ export default function OrderCard({ order }) {
 
   const startTime = getCurrentTimestamp();
   const elapsedSeconds = useElapsedTime(startTime);
-  const elapsedFormatted = formatTime(elapsedSeconds);
+  // 🔥 FORMATO MEJORADO: ahora usa formatDuration
+  const elapsedFormatted = formatDuration(elapsedSeconds);
 
   const getLimit = () => {
     if (order.status === "preparacion") {
@@ -384,7 +386,6 @@ export default function OrderCard({ order }) {
               disabled={busy}
               onClick={handleCancel}
             >
-              <Icons.X size={16} />
               Cancelar pedido
             </button>
           )}

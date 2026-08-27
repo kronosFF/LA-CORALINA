@@ -15,7 +15,7 @@ export default function Stock() {
   const { orders } = useContext(OrderContext);
   const { users } = useContext(AuthContext);
   const { addToast } = useToast();
-
+  
   const [movements, setMovements] = useState([]);
   const [loadingMovements, setLoadingMovements] = useState(false);
   const [debts, setDebts] = useState([]);
@@ -250,11 +250,11 @@ export default function Stock() {
 
       <div className="stock-section history-section">
         <h2><Icons.Clock size={20} /> Historial de movimientos de productos</h2>
-
+        
         {/* Contador de movimientos */}
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
           alignItems: "center",
           marginBottom: "12px",
           fontSize: "14px",
@@ -328,8 +328,8 @@ export default function Stock() {
 
         {/* 🔥 MENSAJE FINAL EN MOVIMIENTOS */}
         {!loadingMovements && movements.length > 0 && !hasMoreMovements && (
-          <div style={{
-            textAlign: "center",
+          <div style={{ 
+            textAlign: "center", 
             marginTop: "16px",
             padding: "12px",
             background: "#f1f5f9",

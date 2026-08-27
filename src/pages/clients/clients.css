@@ -1,4 +1,4 @@
-/* === VARIABLES DE DISEÑO === */
+/* === VARIABLES === */
 :root {
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
@@ -11,14 +11,18 @@
   --bg-card: #ffffff;
   --bg-page: #f8fafc;
   --border: #e2e8f0;
-  --radius: 16px;
+  --radius: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* === PÁGINA PRINCIPAL === */
 .clients-page {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   color: var(--text-dark);
+  padding: 0 16px;
 }
 
 .clients-page>h1 {
@@ -27,21 +31,13 @@
   margin-bottom: 24px;
 }
 
-.clients-page>h3 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-top: 40px;
-  margin-bottom: 16px;
-  color: var(--text-dark);
-}
-
-/* === TARJETA DEL FORMULARIO === */
+/* === FORMULARIO === */
 .clients-form-card {
   background: var(--bg-card);
   padding: 24px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
   border: 1px solid var(--border);
 }
 
@@ -56,7 +52,6 @@
   gap: 8px;
 }
 
-/* Magia Grid: 1 columna en celular, 2 en PC */
 .clients-form {
   display: grid;
   grid-template-columns: 1fr;
@@ -68,7 +63,6 @@
   grid-column: 1 / -1;
 }
 
-/* === INPUTS === */
 .clients-input {
   width: 100%;
   padding: 12px 16px;
@@ -77,7 +71,7 @@
   border-radius: 12px;
   outline: none;
   background: var(--bg-page);
-  transition: all 0.3s ease;
+  transition: var(--transition);
   box-sizing: border-box;
   font-family: inherit;
 }
@@ -88,7 +82,6 @@
   background: #fff;
 }
 
-/* === FILA DE INPUTS PEQUEÑOS === */
 .clients-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -107,7 +100,6 @@
   color: var(--text-light);
 }
 
-/* === SUBIDA DE FOTOS === */
 .clients-photo-container {
   margin-top: 8px;
 }
@@ -141,7 +133,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--primary);
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .clients-file-label:hover {
@@ -174,7 +166,7 @@
   object-fit: cover;
   border-radius: 10px;
   border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .clients-remove-btn {
@@ -189,7 +181,7 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .clients-remove-btn:hover {
@@ -197,7 +189,6 @@
   color: #fff;
 }
 
-/* === BOTONES DEL FORMULARIO === */
 .clients-btn-group {
   display: flex;
   gap: 12px;
@@ -213,7 +204,7 @@
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .clients-btn-primary {
@@ -235,86 +226,232 @@
   background: #cbd5e1;
 }
 
-/* === LISTA DE CLIENTES === */
+/* === HEADER DE LISTA === */
+.clients-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .clients-subtitle {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin: 0;
   color: var(--text-dark);
 }
 
+.clients-count {
+  font-size: 13px;
+  color: var(--text-light);
+  background: var(--bg-page);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+/* 🔥 BUSCADOR */
+.clients-search-container {
+  margin-bottom: 20px;
+}
+
+.clients-search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: var(--transition);
+}
+
+.clients-search-box:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.clients-search-box svg {
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.clients-search-input {
+  flex: 1;
+  padding: 12px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-dark);
+}
+
+.clients-search-input::placeholder {
+  color: var(--text-light);
+}
+
+.clients-search-clear {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.clients-search-clear:hover {
+  color: var(--text-dark);
+  background: var(--bg-page);
+}
+
+/* 🔥 GRID DE CLIENTES - TARJETAS EN COLUMNAS */
 .clients-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 10px;
 }
 
-/* === TARJETA DE CADA CLIENTE === */
-.clients-card {
+/* 🔥 TARJETA COMPACTA - CADA UNA INDEPENDIENTE */
+.clients-card-compact {
   background: var(--bg-card);
   border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   border: 1px solid var(--border);
-  border-left: 5px solid var(--primary);
-  transition: all 0.3s ease;
-  position: relative;
+  border-left: 4px solid var(--primary);
+  transition: var(--transition);
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
 }
 
-.clients-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+.clients-card-compact:hover {
+  box-shadow: var(--shadow-md);
 }
 
-.clients-card.inactive {
+.clients-card-compact.inactive {
   border-left-color: var(--warning);
   background: #fffdf5;
 }
 
-.clients-photo-small {
-  width: 100%;
-  height: 140px;
-  border-radius: 12px;
-  overflow: hidden;
+.clients-card-compact.expanded {
+  border-left-color: var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
-.clients-small-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.clients-info {
-  flex: 1;
+/* Vista compacta (siempre visible) */
+.clients-compact-view {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.clients-header {
-  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.clients-compact-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 🔥 Foto PEQUEÑA en vista compacta */
+.clients-compact-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+}
+
+.clients-compact-name {
+  display: flex;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
-.clients-name {
-  font-size: 16px;
-  font-weight: 700;
+.clients-compact-name strong {
+  font-size: 14px;
   color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.clients-compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.clients-compact-actions button {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium);
+}
+
+.clients-compact-actions button:hover {
+  background: var(--bg-page);
+}
+
+.clients-btn-edit:hover {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.clients-btn-delete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.clients-btn-pay {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.clients-btn-pay:hover {
+  background: #fee2e2 !important;
+}
+
+.clients-expand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.clients-card-compact.expanded .clients-expand-icon {
+  color: var(--primary);
+}
+
+/* Badges */
 .clients-badge {
-  font-size: 11px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  white-space: nowrap;
   background: #22c55e20;
   color: #16a34a;
-  padding: 4px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-  font-weight: 600;
 }
 
 .debt-badge {
@@ -322,77 +459,158 @@
   color: #b91c1c !important;
 }
 
-.clients-contact,
-.clients-times {
+/* 🔥 VISTA EXPANDIDA - SE DESPLIEGA DENTRO DE LA MISMA TARJETA */
+.clients-expanded-view {
+  padding: 16px 16px 16px 16px;
+  border-top: 1px solid var(--border);
+  animation: slideDown 0.25s ease-out;
+  width: 100%;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔥 Foto GRANDE en vista expandida */
+.clients-expanded-photo {
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-page);
+}
+
+.clients-expanded-image {
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  display: block;
+  transition: var(--transition);
+}
+
+.clients-expanded-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+}
+
+.clients-expanded-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
   font-size: 13px;
   color: var(--text-medium);
 }
 
-.clients-times {
-  margin-top: 4px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--border);
+.clients-expanded-row strong {
+  color: var(--text-dark);
 }
 
-.clients-notes {
+.clients-expanded-notes {
+  background: var(--bg-page);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-style: italic;
+}
+
+.clients-expanded-last-order {
   font-size: 12px;
   color: var(--text-light);
-  font-style: italic;
-  display: flex;
-  gap: 6px;
 }
 
-/* === BOTONES DE ACCIÓN EN TARJETA === */
-.clients-action-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
-}
-
-.clients-btn-edit,
-.clients-btn-delete,
-.clients-btn-pay {
-  flex: 1;
-  padding: 8px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+/* === MODAL DE ABONO === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2000;
 }
 
-.clients-btn-edit:hover {
-  background: #e0f2fe;
-  border-color: var(--primary);
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 28px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
 }
 
-.clients-btn-delete:hover {
-  background: #fee2e2;
-  border-color: var(--danger);
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
 }
 
-.clients-btn-pay {
-  border-color: var(--danger);
-  color: var(--danger);
+.btn-save {
+  flex: 1;
+  padding: 12px;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: var(--transition);
 }
 
-.clients-btn-pay:hover {
-  background: #fee2e2;
+.btn-save:hover {
+  background: #15803d;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 12px;
+  background: var(--border);
+  color: var(--text-medium);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+.btn-cancel:hover {
+  background: #cbd5e1;
 }
 
 /* ==========================================
-   📱 RESPONSIVE
+   📱 RESPONSIVE - TARJETAS EN COLUMNAS
    ========================================== */
 
+/* 🔥 Móvil: 1 columna */
+@media (max-width: 639px) {
+  .clients-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* 🔥 Tablets y pantallas medianas: 2 columnas */
 @media (min-width: 640px) {
   .clients-form {
     grid-template-columns: 1fr 1fr;
@@ -403,16 +621,39 @@
   }
 
   .clients-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .clients-expanded-image {
+    max-height: 280px;
   }
 }
 
+/* 🔥 PC Escritorio: 3 columnas */
 @media (min-width: 1024px) {
+  .clients-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
   .clients-form-card {
     padding: 32px;
   }
 
+  .clients-expanded-image {
+    max-height: 320px;
+  }
+}
+
+/* 🔥 Pantallas muy grandes: 4 columnas */
+@media (min-width: 1400px) {
   .clients-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 18px;
+  }
+
+  .clients-expanded-image {
+    max-height: 350px;
   }
 }
