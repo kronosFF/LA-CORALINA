@@ -296,79 +296,19 @@ export default function Users() {
           const isSelf = u.id === user.id;
 
           return (
-            <div
+            <UserCard
               key={u.id}
-              className={`user-card ${!u.active ? "inactive" : ""} ${isSelf ? "self" : ""}`}
-            >
-              <div className="user-info">
-                <div className="user-name">
-                  {u.photo && (
-                    <img
-                      src={u.photo}
-                      alt={u.name}
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        border: "2px solid #e2e8f0"
-                      }}
-                    />
-                  )}
-                  <strong>{u.name}</strong>
-                  {isSelf && <span className="self-badge"> Tú</span>}
-                  {!u.active && <span className="blocked-badge"> Bloqueado</span>}
-                  {isLastAdmin() && u.role === "admin" && <span className="warning-badge"> Último admin</span>}
-                </div>
-                <div className="user-details">
-                  @{u.username} •
-                  <span className={`role-badge ${u.role}`}>
-                    {u.role === "admin" ? "Admin" : u.role === "planta" ? "Planta" : "Vendedor"}
-                  </span>
-                </div>
-              </div>
-              <div className="action-buttons">
-                <button
-                  className="btn-edit"
-                  onClick={() => handleEdit(u)}
-                  disabled={isSelf}
-                  title={isSelf ? "No puedes editarte a ti mismo" : ""}
-                >
-                  <Icons.Edit size={14} />
-                  Editar
-                </button>
-                <button
-                  className="btn-password"
-                  onClick={() => {
-                    const newPass = prompt("Ingrese nueva contraseña para " + u.username);
-                    if (newPass) updatePassword(u.id, newPass);
-                  }}
-                  disabled={isSelf}
-                  title={isSelf ? "No puedes cambiar tu propia contraseña" : ""}
-                >
-                  <Icons.Lock size={14} />
-                  Contraseña
-                </button>
-                <button
-                  className={!u.active ? "btn-activate" : "btn-block"}
-                  onClick={() => handleToggle(u.id, u.active)}
-                  disabled={isSelf || (isLastAdmin() && u.role === "admin")}
-                  title={isSelf ? "No puedes bloquearte a ti mismo" : ""}
-                >
-                  {!u.active ? <Icons.Check size={14} /> : <Icons.Lock size={14} />}
-                  {!u.active ? "Activar" : "Bloquear"}
-                </button>
-                <button
-                  className="btn-delete"
-                  onClick={() => handleDelete(u.id)}
-                  disabled={isSelf}
-                  title={isSelf ? "No puedes eliminarte a ti mismo" : ""}
-                >
-                  <Icons.Trash size={14} />
-                  Eliminar
-                </button>
-              </div>
-            </div>
+              user={u}
+              isSelf={isSelf}
+              isLastAdmin={isLastAdmin()}
+              onEdit={handleEdit}
+              onToggle={handleToggle}
+              onDelete={handleDelete}
+              onPasswordChange={(id) => {
+                const newPass = prompt("Ingrese nueva contraseña para " + u.username);
+                if (newPass) updatePassword(id, newPass);
+              }}
+            />
           );
         })}
       </div>
@@ -376,6 +316,125 @@ export default function Users() {
       <div className="security-note">
         <Icons.Lock size={16} />
         <strong>Nota de seguridad:</strong> No puedes modificar, bloquear o eliminar tu propio usuario.
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 🎨 TARJETA DE USUARIO - OPCIÓN 2 (GRADIENTE EN CABECERA)
+// ============================================
+function UserCard({ user, isSelf, isLastAdmin, onEdit, onToggle, onDelete, onPasswordChange }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const getRoleColor = (role) => {
+    if (role === "admin") return "gradient-admin";
+    if (role === "planta") return "gradient-planta";
+    return "gradient-vendedor";
+  };
+
+  const getRoleLabel = (role) => {
+    if (role === "admin") return "Admin";
+    if (role === "planta") return "Planta";
+    return "Vendedor";
+  };
+
+  const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  return (
+    <div className={`user-card-gradient ${!user.active ? "inactive" : ""} ${isSelf ? "self" : ""}`}>
+      {/* Cabecera con gradiente según rol */}
+      <div className={`user-card-header ${getRoleColor(user.role)}`}>
+        <div className="user-header-left">
+          {user.photo ? (
+            <img src={user.photo} alt={user.name} className="user-header-image" />
+          ) : (
+            <div className="user-header-initials">{initials}</div>
+          )}
+          <div className="user-header-info">
+            <h4 className="user-header-name">
+              {user.name}
+              {isSelf && <span className="self-badge-header"> Tú</span>}
+            </h4>
+            <span className="user-header-username">@{user.username}</span>
+          </div>
+        </div>
+        <div className="user-header-actions">
+          <button
+            className="user-btn-expand"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? <Icons.Cancel size={16} /> : <Icons.Plus size={16} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Cuerpo de la tarjeta */}
+      <div className="user-card-body">
+        <div className="user-badges">
+          <span className={`user-role-badge ${user.role}`}>
+            {getRoleLabel(user.role)}
+          </span>
+          {!user.active && <span className="user-status-badge inactive-badge">Bloqueado</span>}
+          {isLastAdmin && user.role === "admin" && <span className="user-status-badge warning-badge">Último admin</span>}
+          {isSelf && <span className="user-status-badge self-badge">Tú</span>}
+        </div>
+
+        {/* Expansión - Botones de acción */}
+        {expanded && (
+          <div className="user-expanded">
+            <div className="user-expanded-row">
+              <span><strong>Nombre:</strong> {user.name}</span>
+            </div>
+            <div className="user-expanded-row">
+              <span><strong>Usuario:</strong> @{user.username}</span>
+            </div>
+            <div className="user-expanded-row">
+              <span><strong>Rol:</strong> {getRoleLabel(user.role)}</span>
+            </div>
+            <div className="user-expanded-row">
+              <span><strong>Estado:</strong> {user.active ? "Activo ✅" : "Bloqueado ❌"}</span>
+            </div>
+            <div className="user-action-buttons">
+              <button
+                className="user-btn-edit"
+                onClick={() => onEdit(user)}
+                disabled={isSelf}
+                title={isSelf ? "No puedes editarte a ti mismo" : ""}
+              >
+                <Icons.Edit size={14} />
+                Editar
+              </button>
+              <button
+                className="user-btn-password"
+                onClick={() => onPasswordChange(user.id)}
+                disabled={isSelf}
+                title={isSelf ? "No puedes cambiar tu propia contraseña" : ""}
+              >
+                <Icons.Lock size={14} />
+                Contraseña
+              </button>
+              <button
+                className={!user.active ? "user-btn-activate" : "user-btn-block"}
+                onClick={() => onToggle(user.id, user.active)}
+                disabled={isSelf || (isLastAdmin && user.role === "admin")}
+                title={isSelf ? "No puedes bloquearte a ti mismo" : ""}
+              >
+                {!user.active ? <Icons.Check size={14} /> : <Icons.Lock size={14} />}
+                {!user.active ? "Activar" : "Bloquear"}
+              </button>
+              <button
+                className="user-btn-delete"
+                onClick={() => onDelete(user.id)}
+                disabled={isSelf}
+                title={isSelf ? "No puedes eliminarte a ti mismo" : ""}
+              >
+                <Icons.Trash size={14} />
+                Eliminar
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

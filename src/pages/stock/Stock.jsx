@@ -15,16 +15,20 @@ export default function Stock() {
   const { orders } = useContext(OrderContext);
   const { users } = useContext(AuthContext);
   const { addToast } = useToast();
-  
+
   const [movements, setMovements] = useState([]);
   const [loadingMovements, setLoadingMovements] = useState(false);
   const [debts, setDebts] = useState([]);
   const [bottleHistory, setBottleHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  // 🔥 Paginación para historial de movimientos
+  // 🔥 PAGINACIÓN - MOVIMIENTOS
   const [movementPage, setMovementPage] = useState(1);
-  const MOVEMENTS_PER_PAGE = 10;
+  const MOVEMENTS_PER_PAGE = 9;
+
+  // 🔥 PAGINACIÓN - HISTORIAL DE BOTELLONES
+  const [bottlePage, setBottlePage] = useState(1);
+  const BOTTLE_PER_PAGE = 9;
 
   const [selectedProduct, setSelectedProduct] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -44,8 +48,16 @@ export default function Stock() {
   const salidaTypes = ["SALIDA_DETERIORO", "SALIDA_AJUSTE"];
 
   useEffect(() => { loadMovements(); loadBottleHistory(); }, []);
-  useEffect(() => { loadMovements(); }, [filterProduct, filterType]);
-  useEffect(() => { if (showBottleHistory) loadBottleHistory(); }, [showBottleHistory]);
+  useEffect(() => {
+    setMovementPage(1);
+    loadMovements();
+  }, [filterProduct, filterType]);
+  useEffect(() => {
+    if (showBottleHistory) {
+      setBottlePage(1);
+      loadBottleHistory();
+    }
+  }, [showBottleHistory]);
 
   useEffect(() => {
     if (getAllDebts && users && orders) {
@@ -56,7 +68,6 @@ export default function Stock() {
 
   const loadMovements = async () => {
     setLoadingMovements(true);
-    setMovementPage(1); // 🔥 Reiniciar página al cargar
     const filters = {};
     if (filterProduct) filters.productId = filterProduct;
     if (filterType) filters.movementType = filterType;
@@ -87,7 +98,9 @@ export default function Stock() {
     else success = await reduceStock(selectedProduct, Number(quantity), movementType, comment, user);
 
     if (success) {
-      setQuantity(""); setComment(""); await loadMovements();
+      setQuantity(""); setComment("");
+      setMovementPage(1);
+      await loadMovements();
       addToast(activeTab === "entrada" ? "Stock agregado correctamente" : "Stock reducido correctamente", "success");
     }
   };
@@ -103,6 +116,7 @@ export default function Stock() {
     const success = await addEmptyBottleReport(seller.id, seller.name, Number(reportedQuantity), new Date(bottleDate), bottleComment);
     if (success) {
       setReportedQuantity(""); setBottleComment("");
+      setBottlePage(1);
       await loadBottleHistory();
       addToast(`Reporte de ${seller.name} guardado: ${reportedQuantity} botellones`, "success");
     }
@@ -122,13 +136,17 @@ export default function Stock() {
     return mov.type === "salida" || mov.movementType === "SALIDA_DETERIORO" || mov.movementType === "SALIDA_VENTA" || mov.movementType === "SALIDA_AJUSTE";
   };
 
+  // 🔥 MOVIMIENTOS PAGINADOS
+  const displayedMovements = movements.slice(0, movementPage * MOVEMENTS_PER_PAGE);
+  const hasMoreMovements = movements.length > movementPage * MOVEMENTS_PER_PAGE;
+
+  // 🔥 HISTORIAL BOTELLONES PAGINADO
+  const displayedBottles = bottleHistory.slice(0, bottlePage * BOTTLE_PER_PAGE);
+  const hasMoreBottles = bottleHistory.length > bottlePage * BOTTLE_PER_PAGE;
+
   if (user?.role !== "admin" && user?.role !== "planta") {
     return (<div style={{ padding: "20px", textAlign: "center" }}><p>No tienes acceso a esta sección</p></div>);
   }
-
-  // 🔥 Calcular movimientos visibles según paginación
-  const displayedMovements = movements.slice(0, movementPage * MOVEMENTS_PER_PAGE);
-  const hasMoreMovements = movements.length > movementPage * MOVEMENTS_PER_PAGE;
 
   return (
     <div className="stock-page">
@@ -234,37 +252,58 @@ export default function Stock() {
             <h3>Historial de reportes</h3>
             {loadingHistory && <p style={{ color: "#64748b" }}>Cargando historial...</p>}
             {!loadingHistory && bottleHistory.length === 0 && (<EmptyState icon={<Icons.Info size={32} />} title="Sin historial" description="Aún no se han reportado botellones." />)}
-            {!loadingHistory && bottleHistory.map((record) => (
-              <div key={record.id} className="movement-card movement-in">
-                <div className="movement-header">
-                  <strong>{record.sellerName}</strong>
-                  <div className="movement-qty qty-in">{record.reportedQuantity} vacíos</div>
+            {!loadingHistory && (
+              <>
+                <div className="history-grid">
+                  {displayedBottles.map((record) => (
+                    <div key={record.id} className="history-card-glow movement-in">
+                      <div className="history-card-header">
+                        <strong>{record.sellerName}</strong>
+                        <span className="history-qty-in">{record.reportedQuantity} vacíos</span>
+                      </div>
+                      {record.comment && <div className="history-card-comment">{record.comment}</div>}
+                      <div className="history-card-meta">{record.date?.toDate ? record.date.toDate().toLocaleString() : new Date(record.date).toLocaleString()}</div>
+                    </div>
+                  ))}
                 </div>
-                {record.comment && <div className="movement-comment">{record.comment}</div>}
-                <div className="movement-meta">{record.date?.toDate ? record.date.toDate().toLocaleString() : new Date(record.date).toLocaleString()}</div>
-              </div>
-            ))}
+
+                {/* 🔥 BOTÓN VER MÁS - BOTELLONES */}
+                {hasMoreBottles && (
+                  <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
+                    <button
+                      onClick={() => setBottlePage(prev => prev + 1)}
+                      className="stock-btn-secondary"
+                      style={{ padding: "12px 28px", fontSize: "14px" }}
+                    >
+                      <Icons.Plus size={16} />
+                      Ver más ({bottleHistory.length - (bottlePage * BOTTLE_PER_PAGE)} restantes)
+                    </button>
+                  </div>
+                )}
+
+                {/* 🔥 MENSAJE FINAL - BOTELLONES */}
+                {bottleHistory.length > 0 && !hasMoreBottles && (
+                  <div className="history-all-loaded">
+                    <Icons.Check size={16} />
+                    Todos los reportes cargados ({bottleHistory.length} en total)
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
 
       <div className="stock-section history-section">
         <h2><Icons.Clock size={20} /> Historial de movimientos de productos</h2>
-        
+
         {/* Contador de movimientos */}
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center",
-          marginBottom: "12px",
-          fontSize: "14px",
-          color: "#64748b"
-        }}>
+        <div className="history-counter">
           <span>
             Mostrando <strong>{displayedMovements.length}</strong> de <strong>{movements.length}</strong> movimientos
           </span>
           {movements.length > 0 && (
-            <span style={{ fontSize: "12px", background: "#f1f5f9", padding: "4px 10px", borderRadius: "20px" }}>
+            <span className="history-page-badge">
               Página {Math.ceil(displayedMovements.length / MOVEMENTS_PER_PAGE)}
             </span>
           )}
@@ -290,60 +329,53 @@ export default function Stock() {
           <EmptyState icon={<Icons.Clock size={32} />} title="Sin movimientos" description="No se han registrado entradas ni salidas." />
         )}
 
-        {/* 🔥 MOVIMIENTOS PAGINADOS */}
-        {!loadingMovements && displayedMovements.map((mov) => {
-          const label = getMovementLabel(mov);
-          const salida = esSalida(mov);
-          return (
-            <div key={mov.id} className={`movement-card ${salida ? "movement-out" : "movement-in"}`}>
-              <div className="movement-header">
-                <div>
-                  <span className="movement-product">{mov.productName}</span>
-                  <span className={`movement-badge ${salida ? "badge-out" : "badge-in"}`}>{label}</span>
-                </div>
-                <div className={`movement-qty ${salida ? "qty-out" : "qty-in"}`}>{salida ? "-" : "+"}{mov.quantity} uds</div>
-              </div>
-              {mov.comment && <div className="movement-comment">{mov.comment}</div>}
-              <div className="movement-meta">
-                <span>{mov.userName || "Sistema"}</span>
-                <span>{mov.date?.toDate ? mov.date.toDate().toLocaleString() : new Date(mov.date).toLocaleString()}</span>
-              </div>
+        {!loadingMovements && (
+          <>
+            <div className="history-grid">
+              {displayedMovements.map((mov) => {
+                const label = getMovementLabel(mov);
+                const salida = esSalida(mov);
+                return (
+                  <div key={mov.id} className={`history-card-glow ${salida ? "movement-out" : "movement-in"}`}>
+                    <div className="history-card-header">
+                      <div>
+                        <span className="history-product-name">{mov.productName}</span>
+                        <span className={`history-badge ${salida ? "badge-out" : "badge-in"}`}>{label}</span>
+                      </div>
+                      <span className={`history-qty ${salida ? "qty-out" : "qty-in"}`}>{salida ? "-" : "+"}{mov.quantity} uds</span>
+                    </div>
+                    {mov.comment && <div className="history-card-comment">{mov.comment}</div>}
+                    <div className="history-card-meta">
+                      <span>{mov.userName || "Sistema"}</span>
+                      <span>{mov.date?.toDate ? mov.date.toDate().toLocaleString() : new Date(mov.date).toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
 
-        {/* 🔥 BOTÓN VER MÁS EN MOVIMIENTOS */}
-        {!loadingMovements && hasMoreMovements && (
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
-            <button
-              onClick={() => setMovementPage(prev => prev + 1)}
-              className="stock-btn-secondary"
-              style={{ padding: "12px 28px", fontSize: "14px" }}
-            >
-              <Icons.Plus size={16} />
-              Ver más ({movements.length - (movementPage * MOVEMENTS_PER_PAGE)} restantes)
-            </button>
-          </div>
-        )}
+            {/* 🔥 BOTÓN VER MÁS - MOVIMIENTOS */}
+            {hasMoreMovements && (
+              <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
+                <button
+                  onClick={() => setMovementPage(prev => prev + 1)}
+                  className="stock-btn-secondary"
+                  style={{ padding: "12px 28px", fontSize: "14px" }}
+                >
+                  <Icons.Plus size={16} />
+                  Ver más ({movements.length - (movementPage * MOVEMENTS_PER_PAGE)} restantes)
+                </button>
+              </div>
+            )}
 
-        {/* 🔥 MENSAJE FINAL EN MOVIMIENTOS */}
-        {!loadingMovements && movements.length > 0 && !hasMoreMovements && (
-          <div style={{ 
-            textAlign: "center", 
-            marginTop: "16px",
-            padding: "12px",
-            background: "#f1f5f9",
-            borderRadius: "10px",
-            color: "#64748b",
-            fontSize: "13px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px"
-          }}>
-            <Icons.Check size={16} />
-            Todos los movimientos cargados ({movements.length} en total)
-          </div>
+            {/* 🔥 MENSAJE FINAL - MOVIMIENTOS */}
+            {movements.length > 0 && !hasMoreMovements && (
+              <div className="history-all-loaded">
+                <Icons.Check size={16} />
+                Todos los movimientos cargados ({movements.length} en total)
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

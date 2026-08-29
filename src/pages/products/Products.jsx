@@ -148,27 +148,89 @@ export default function Products() {
 
       <div className="products-grid">
         {products.map((product) => (
-          <div key={product.id} className="product-card">
+          <ProductCard
+            key={product.id}
+            product={product}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 🎨 TARJETA DE PRODUCTO - GRADIENTE PASTEL
+// ============================================
+function ProductCard({ product, onEdit, onDelete }) {
+  const [expanded, setExpanded] = useState(false);
+
+  // Colores pastel para el gradiente según stock
+  const getGradientClass = (stock) => {
+    if (stock <= 5) return 'gradient-pastel-danger';
+    if (stock <= 15) return 'gradient-pastel-warning';
+    return 'gradient-pastel-success';
+  };
+
+  const getStockLabel = (stock) => {
+    if (stock <= 5) return '⚠️ Stock crítico';
+    if (stock <= 15) return '⚠️ Stock bajo';
+    return '✅ Stock disponible';
+  };
+
+  return (
+    <div className="product-card-gradient">
+      {/* Cabecera con gradiente pastel */}
+      <div className={`product-card-header ${getGradientClass(product.stock || 0)}`}>
+        <div className="product-header-left">
+          {product.image && (
+            <img src={product.image} alt={product.name} className="product-header-image" />
+          )}
+          <div className="product-header-info">
+            <h4 className="product-header-name">{product.name}</h4>
+            <span className="product-header-price">${(product.price || 0).toLocaleString()}</span>
+          </div>
+        </div>
+        <div className="product-header-actions">
+          <button className="product-btn-edit" onClick={() => onEdit(product)}>
+            <Icons.Edit size={14} />
+          </button>
+          <button className="product-btn-delete" onClick={() => onDelete(product.id)}>
+            <Icons.Trash size={14} />
+          </button>
+          <button className="product-btn-expand" onClick={() => setExpanded(!expanded)}>
+            {expanded ? <Icons.Cancel size={14} /> : <Icons.Plus size={14} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Cuerpo de la tarjeta */}
+      <div className="product-card-body">
+        <div className="product-stock-info">
+          <span className="product-stock-label">{getStockLabel(product.stock || 0)}</span>
+          <span className="product-stock-number">{product.stock || 0} uds</span>
+        </div>
+
+        {/* Expansión - Detalles adicionales */}
+        {expanded && (
+          <div className="product-expanded">
+            <div className="product-expanded-row">
+              <span><strong>Nombre:</strong> {product.name}</span>
+            </div>
+            <div className="product-expanded-row">
+              <span><strong>Precio:</strong> ${(product.price || 0).toLocaleString()}</span>
+            </div>
+            <div className="product-expanded-row">
+              <span><strong>Stock:</strong> {product.stock || 0} unidades</span>
+            </div>
             {product.image && (
-              <div className="product-image-container">
-                <img src={product.image} alt={product.name} className="product-img" />
+              <div className="product-expanded-image">
+                <img src={product.image} alt={product.name} />
               </div>
             )}
-            <div className="product-info">
-              <strong>{product.name}</strong>
-              <div className="product-price">${product.price.toLocaleString()}</div>
-              <div className="product-stock">Stock: {product.stock || 0} uds</div>
-            </div>
-            <div className="product-actions">
-              <button className="btn-edit" onClick={() => handleEdit(product)}>
-                <Icons.Edit size={16} />
-              </button>
-              <button className="btn-delete" onClick={() => handleDelete(product.id)}>
-                <Icons.Trash size={16} />
-              </button>
-            </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

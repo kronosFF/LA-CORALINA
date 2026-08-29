@@ -8,6 +8,7 @@
   --purple: #7c3aed;
   --pink: #ec4899;
   --orange: #f59e0b;
+  --coral: #f97373;
   --text-dark: #1e293b;
   --text-medium: #475569;
   --text-light: #94a3b8;
@@ -33,35 +34,19 @@
   margin-bottom: 24px;
 }
 
-/* === SECCIONES === */
+/* === SECCIONES (TARJETAS GRANDES) - SOLO SOMBRA === */
 .dash-section {
   background: var(--bg-card);
   padding: 24px;
   border-radius: var(--radius);
   margin-bottom: 24px;
-  border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  border-top: 5px solid var(--primary);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.3s ease;
 }
 
-.dash-section.accent-warning {
-  border-top-color: var(--warning);
-}
-
-.dash-section.accent-purple {
-  border-top-color: var(--purple);
-}
-
-.dash-section.accent-danger {
-  border-top-color: var(--danger);
-}
-
-.dash-section.accent-cyan {
-  border-top-color: #06b6d4;
-}
-
-.dash-section.accent-success {
-  border-top-color: var(--success);
+.dash-section:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .dash-section>h3 {
@@ -134,10 +119,16 @@
   gap: 16px;
 }
 
+.dash-expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
 /* ==========================================
-   🎨 ESTILO 1: TARJETA CON GRADIENTE (KPI)
+   🎨 KPI - TARJETAS CON GRADIENTE (BONITAS)
    ========================================== */
-.dash-card-gradient {
+.dash-card-gradient-kpi {
   padding: 20px 24px;
   border-radius: 14px;
   color: #fff;
@@ -150,12 +141,12 @@
   justify-content: center;
 }
 
-.dash-card-gradient:hover {
+.dash-card-gradient-kpi:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.dash-card-gradient-icon {
+.dash-card-gradient-kpi .kpi-icon {
   position: absolute;
   top: 12px;
   right: 16px;
@@ -163,7 +154,7 @@
   font-size: 32px;
 }
 
-.dash-card-gradient-title {
+.dash-card-gradient-kpi .kpi-title {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -172,41 +163,71 @@
   margin: 0 0 4px 0;
 }
 
-.dash-card-gradient-value {
+.dash-card-gradient-kpi .kpi-value {
   font-size: 28px;
   font-weight: 800;
   margin: 0;
   line-height: 1.2;
 }
 
+/* Gradientes de colores para KPI */
+.gradient-blue {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.gradient-pink {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+}
+
+.gradient-coral {
+  background: linear-gradient(135deg, #f97373 0%, #dc2626 100%);
+}
+
+.gradient-teal {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+
 /* ==========================================
-   🎨 ESTILO 2: TARJETA CON BORDE IZQUIERDO
+   🎨 OPCIÓN 1: BORDE COMPLETO + GLOW
    ========================================== */
-.dash-card-left-border {
+.dash-card-glow {
   background: var(--bg-card);
   padding: 20px 24px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  border-left: 6px solid var(--success);
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
   min-height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
 }
 
-.dash-card-left-border:hover {
-  box-shadow: var(--shadow-md);
+.dash-card-glow:hover {
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 
-.dash-card-left-border-icon {
+.dash-card-glow .card-icon {
   font-size: 24px;
   margin-bottom: 4px;
 }
 
-.dash-card-left-border-title {
+.dash-card-glow .card-title {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-light);
@@ -215,7 +236,7 @@
   letter-spacing: 0.5px;
 }
 
-.dash-card-left-border-value {
+.dash-card-glow .card-value {
   font-size: 26px;
   font-weight: 800;
   margin: 0;
@@ -223,14 +244,81 @@
 }
 
 /* ==========================================
-   🎨 ESTILO 3: TARJETA CON SOMBRA ELEVADA
+   🎨 OPCIÓN 3: PUNTO DE COLOR LATERAL
+   ========================================== */
+.dash-card-dot {
+  background: var(--bg-card);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dash-card-dot:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.dash-card-dot .card-icon {
+  font-size: 22px;
+  margin-bottom: 2px;
+}
+
+.dash-card-dot .card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dash-card-dot .card-value {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-dark);
+}
+
+/* Colores para el punto lateral */
+.dash-card-dot.dot-success {
+  border-left-color: var(--success);
+}
+
+.dash-card-dot.dot-warning {
+  border-left-color: var(--warning);
+}
+
+.dash-card-dot.dot-danger {
+  border-left-color: var(--danger);
+}
+
+.dash-card-dot.dot-blue {
+  border-left-color: var(--primary);
+}
+
+.dash-card-dot.dot-purple {
+  border-left-color: var(--purple);
+}
+
+.dash-card-dot.dot-coral {
+  border-left-color: var(--coral);
+}
+
+/* ==========================================
+   🎨 OPCIÓN 4: TARJETA CON SOMBRA ELEVADA
    ========================================== */
 .dash-card-elevated {
   background: var(--bg-card);
   padding: 20px 24px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
-  border-top: 4px solid var(--success);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   min-height: 100px;
@@ -241,15 +329,15 @@
 
 .dash-card-elevated:hover {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
 }
 
-.dash-card-elevated-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
+.dash-card-elevated .card-icon {
+  font-size: 22px;
+  margin-bottom: 2px;
 }
 
-.dash-card-elevated-title {
+.dash-card-elevated .card-title {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-light);
@@ -258,7 +346,7 @@
   letter-spacing: 0.5px;
 }
 
-.dash-card-elevated-value {
+.dash-card-elevated .card-value {
   font-size: 26px;
   font-weight: 800;
   margin: 0;
@@ -266,34 +354,63 @@
 }
 
 /* ==========================================
-   🎨 ESTILO 4: RANKING CON AVATAR + MEDALLA
+   🎨 RANKING DE VENDEDORES - NUEVO DISEÑO
    ========================================== */
-.dash-ranking-avatar {
+.dash-ranking-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  background: var(--bg-page);
-  border-radius: 12px;
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-  transition: all 0.2s;
-  position: relative;
 }
 
-.dash-ranking-avatar:hover {
-  background: #eef2ff;
+.dash-ranking-card:hover {
+  box-shadow: var(--shadow-md);
   transform: translateX(4px);
 }
 
-.dash-ranking-medal {
-  font-size: 24px;
-  width: 36px;
-  text-align: center;
+.dash-ranking-card .rank-number {
+  width: 48px;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
   flex-shrink: 0;
 }
 
-.dash-ranking-avatar-circle {
+.dash-ranking-card .rank-number.gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.dash-ranking-card .rank-number.silver {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+}
+
+.dash-ranking-card .rank-number.bronze {
+  background: linear-gradient(135deg, #cd7f32, #b8860b);
+}
+
+.dash-ranking-card .rank-number.normal {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.dash-ranking-card .rank-info {
+  flex: 1;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+}
+
+.dash-ranking-card .rank-avatar {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -302,117 +419,137 @@
   justify-content: center;
   color: #fff;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 14px;
   flex-shrink: 0;
 }
 
-.dash-ranking-avatar-info {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+.dash-ranking-card .rank-avatar.blue {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
 }
 
-.dash-ranking-avatar-name {
-  font-weight: 600;
+.dash-ranking-card .rank-avatar.green {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.dash-ranking-card .rank-avatar.orange {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.dash-ranking-card .rank-avatar.purple {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.dash-ranking-card .rank-avatar.pink {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.dash-ranking-card .rank-avatar.teal {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+}
+
+.dash-ranking-card .rank-detail {
+  flex: 1;
+}
+
+.dash-ranking-card .rank-detail .seller {
+  font-weight: 700;
   color: var(--text-dark);
   font-size: 15px;
 }
 
-.dash-ranking-avatar-amount {
-  font-weight: 800;
+.dash-ranking-card .rank-detail .seller-amount {
+  font-weight: 700;
   color: var(--success);
-  font-size: 16px;
+  font-size: 14px;
 }
 
 /* ==========================================
-   🎨 ESTILO 5: TARJETA AVATAR + BADGE (GASTOS)
+   🎨 GASTOS POR VENDEDOR - COLORES CORALINA
    ========================================== */
-.dash-expenses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-.dash-expense-card-avatar {
+.dash-expense-card {
   background: var(--bg-card);
-  padding: 16px 20px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.dash-expense-card-avatar:hover {
+.dash-expense-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-.dash-expense-avatar {
-  width: 50px;
-  height: 50px;
+.dash-expense-card .expense-header {
+  padding: 14px 18px;
+  background: linear-gradient(90deg, #1e3a5f 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-expense-card .expense-header .seller-initials {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
   font-weight: 800;
-  font-size: 18px;
-  flex-shrink: 0;
+  font-size: 14px;
 }
 
-.dash-expense-avatar-info {
-  flex: 1;
-}
-
-.dash-expense-avatar-info h4 {
-  font-size: 15px;
+.dash-expense-card .expense-header .seller-name {
+  color: #fff;
   font-weight: 700;
-  margin: 0 0 4px 0;
-  color: var(--text-dark);
+  font-size: 15px;
+  flex: 1;
+  margin-left: 10px;
 }
 
-.dash-expense-avatar-total {
-  font-size: 16px;
+.dash-expense-card .expense-header .total-amount {
+  color: #fff;
   font-weight: 800;
-  color: var(--danger);
+  font-size: 16px;
 }
 
-.dash-expense-avatar-detail {
+.dash-expense-card .expense-body {
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
+}
+
+.dash-expense-card .expense-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 6px;
 }
 
-.dash-expense-avatar-cat {
+.dash-expense-card .expense-tag {
   font-size: 11px;
   background: var(--bg-page);
-  padding: 2px 10px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
   color: var(--text-medium);
   font-weight: 600;
+  border: 1px solid var(--border);
 }
 
-.dash-expense-avatar-more {
+.dash-expense-card .expense-more {
   font-size: 11px;
   color: var(--text-light);
   font-weight: 600;
 }
 
 /* ==========================================
-   🎨 ESTILO 6: TARJETA BORDE COMPLETO + GLOW
+   🎨 CLIENTES INACTIVOS (Opción 1: Glow)
    ========================================== */
-.dash-inactive-card-glow {
+.dash-inactive-glow {
   background: #fff1f2;
   padding: 16px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
@@ -424,59 +561,58 @@
   transition: all 0.3s ease;
 }
 
-.dash-inactive-card-glow:hover {
+.dash-inactive-glow:hover {
   box-shadow: 0 0 30px rgba(239, 68, 68, 0.15);
   border-color: #f87171;
 }
 
-.dash-inactive-info strong {
+.dash-inactive-glow .info strong {
   display: block;
   color: #b91c1c;
   font-size: 15px;
 }
 
-.dash-inactive-sub {
+.dash-inactive-glow .info .sub {
   font-size: 12px;
   color: var(--text-medium);
   margin-top: 4px;
 }
 
-.dash-inactive-days {
+.dash-inactive-glow .days {
   text-align: right;
 }
 
-.dash-days-count {
+.dash-inactive-glow .days .count {
   color: var(--danger);
   font-weight: 800;
   font-size: 22px;
   display: block;
 }
 
-.dash-days-label {
+.dash-inactive-glow .days .label {
   font-size: 11px;
   color: var(--text-light);
 }
 
 /* ==========================================
-   🎨 ESTILO 7: TARJETA MARCO COMPLETO (STOCK)
+   🎨 STOCK (Opción 4: Sombra elevada)
    ========================================== */
-.dash-stock-card-elevated {
+.dash-stock-elevated {
   background: var(--bg-card);
   padding: 16px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   text-align: center;
-  border: 2px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
-.dash-stock-card-elevated:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-  border-color: #2563eb;
+.dash-stock-elevated:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
 }
 
-.dash-stock-card-elevated h4 {
+.dash-stock-elevated h4 {
   font-size: 14px;
   margin-bottom: 8px;
   white-space: nowrap;
@@ -484,11 +620,17 @@
   text-overflow: ellipsis;
 }
 
-.dash-qty {
+.dash-stock-elevated .qty {
   font-size: 24px;
   font-weight: 800;
   margin: 8px 0;
   line-height: 1;
+}
+
+.dash-stock-elevated .price {
+  color: var(--text-light);
+  font-size: 13px;
+  margin-top: 4px;
 }
 
 .text-success {
@@ -503,75 +645,67 @@
   color: var(--danger);
 }
 
-.dash-price {
-  color: var(--text-light);
-  font-size: 13px;
-  margin-top: 4px;
-}
-
 /* ==========================================
-   🎨 ESTILO 8: TARJETA FONDO BLUR (DEUDAS)
+   🎨 DEUDAS BOTELLONES (Opción 3: Punto lateral)
    ========================================== */
-.dash-debt-card-blur {
-  position: relative;
-  border-radius: 14px;
-  overflow: hidden;
+.dash-debt-dot {
+  background: var(--bg-card);
   padding: 16px;
+  border-radius: var(--radius);
   text-align: center;
   border: 1px solid var(--border);
+  border-left: 5px solid var(--warning);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
   min-height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.dash-debt-blur-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  opacity: 0.15;
-  filter: blur(8px);
-  transform: scale(1.05);
+.dash-debt-dot:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
 }
 
-.dash-debt-blur-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.dash-debt-blur-content {
-  position: relative;
-  z-index: 2;
-}
-
-.dash-debt-blur-content h4 {
+.dash-debt-dot .content h4 {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 8px;
   color: var(--text-dark);
 }
 
-.dash-debt-blur-content p {
+.dash-debt-dot .content p {
   font-size: 13px;
   color: var(--text-medium);
   margin-bottom: 4px;
 }
 
-.dash-debt-status {
+.dash-debt-dot .content .status {
   font-size: 18px;
   font-weight: 800;
   margin-top: 8px;
+}
+
+.dash-debt-dot.dot-danger {
+  border-left-color: var(--danger);
+}
+
+.dash-debt-dot.dot-success {
+  border-left-color: var(--success);
 }
 
 /* ==========================================
    RESPONSIVE
    ========================================== */
 @media (min-width: 768px) {
+  .dash-card-gradient-kpi .kpi-value {
+    font-size: 32px;
+  }
 
-  .dash-card-gradient-value,
-  .dash-card-left-border-value,
-  .dash-card-elevated-value {
+  .dash-card-dot .card-value,
+  .dash-card-elevated .card-value,
+  .dash-card-glow .card-value {
     font-size: 32px;
   }
 
@@ -581,18 +715,23 @@
 }
 
 @media (max-width: 480px) {
-  .dash-inactive-card-glow {
+  .dash-inactive-glow {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .dash-inactive-days {
+  .dash-inactive-glow .days {
     text-align: left;
     width: 100%;
   }
 
-  .dash-ranking-avatar-info {
+  .dash-ranking-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .dash-ranking-card .rank-number {
+    min-height: 36px;
+    padding: 4px 0;
   }
 }

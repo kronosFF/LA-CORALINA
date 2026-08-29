@@ -28,9 +28,9 @@
 }
 
 .products-page>h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  margin-top: 40px;
+  margin-top: 32px;
   margin-bottom: 16px;
   color: var(--text-dark);
 }
@@ -56,7 +56,6 @@
   gap: 8px;
 }
 
-/* Grid para el formulario */
 .products-form {
   display: grid;
   grid-template-columns: 1fr;
@@ -68,7 +67,6 @@
   grid-column: 1 / -1;
 }
 
-/* === INPUTS === */
 .products-input {
   width: 100%;
   padding: 12px 16px;
@@ -221,113 +219,184 @@
   background: #cbd5e1;
 }
 
-/* === GRID DE PRODUCTOS === */
+/* ==========================================
+   🎨 TARJETA DE PRODUCTO - GRADIENTE PASTEL
+   ========================================== */
 .products-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
 }
 
-/* === TARJETA DE PRODUCTO === */
-.product-card {
+.product-card-gradient {
   background: var(--bg-card);
   border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
   border: 1px solid var(--border);
-  border-left: 5px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+.product-card-gradient:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
-.product-image-container {
-  width: 70px;
-  height: 70px;
-  flex-shrink: 0;
+/* Cabecera con gradiente pastel */
+.product-card-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #1e293b;
 }
 
-.product-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+/* ✅ Stock disponible - Verde pastel */
+.product-card-header.gradient-pastel-success {
+  background: linear-gradient(90deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
 }
 
-.product-info {
+/* ⚠️ Stock bajo - Naranja pastel */
+.product-card-header.gradient-pastel-warning {
+  background: linear-gradient(90deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+}
+
+/* 🚨 Stock crítico - Rojo pastel */
+.product-card-header.gradient-pastel-danger {
+  background: linear-gradient(90deg, #fee2e2 0%, #fca5a5 100%);
+  color: #991b1b;
+}
+
+.product-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  min-width: 0;
 }
 
-.product-info strong {
-  font-size: 16px;
-  color: var(--text-dark);
+.product-header-image {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.product-price {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--success);
+.product-header-info {
+  flex: 1;
+  min-width: 0;
 }
 
-.product-stock {
-  font-size: 11px;
-  background: #f1f5f9;
-  color: var(--text-medium);
-  padding: 3px 8px;
-  border-radius: 20px;
-  display: inline-block;
-  width: fit-content;
+.product-header-name {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+}
+
+.product-header-price {
+  font-size: 13px;
   font-weight: 600;
+  opacity: 0.85;
+  color: inherit;
 }
 
-.product-actions {
+.product-header-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
 }
 
-.btn-edit,
-.btn-delete {
-  padding: 8px 12px;
-  border-radius: 10px;
+.product-header-actions button {
+  width: 30px;
+  height: 30px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  font-size: 14px;
 }
 
-.btn-edit {
-  background: transparent;
-  border: 1.5px solid var(--warning);
-  color: var(--warning);
+.product-header-actions button:hover {
+  background: rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
 }
 
-.btn-edit:hover {
-  background: var(--warning);
-  color: #fff;
+.product-header-actions .product-btn-edit:hover {
+  background: rgba(37, 99, 235, 0.2);
 }
 
-.btn-delete {
-  background: transparent;
-  border: 1.5px solid var(--danger);
-  color: var(--danger);
+.product-header-actions .product-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
 }
 
-.btn-delete:hover {
-  background: var(--danger);
-  color: #fff;
+/* Cuerpo de la tarjeta */
+.product-card-body {
+  padding: 12px 18px 14px;
+  background: var(--bg-card);
+}
+
+.product-stock-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.product-stock-label {
+  font-weight: 600;
+  color: var(--text-medium);
+}
+
+.product-stock-number {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* Expansión */
+.product-expanded {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.product-expanded-row {
+  font-size: 13px;
+  color: var(--text-medium);
+  padding: 4px 0;
+}
+
+.product-expanded-row strong {
+  color: var(--text-dark);
+}
+
+.product-expanded-image {
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 150px;
+}
+
+.product-expanded-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* ==========================================
@@ -340,17 +409,56 @@
   }
 
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .product-image-container {
-    width: 90px;
-    height: 90px;
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .product-img {
-    border-radius: 50%;
+  .product-header-name {
+    font-size: 15px;
+  }
+
+  .product-header-price {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .product-header-left {
+    flex: 1 1 100%;
+  }
+
+  .product-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .product-header-name {
+    font-size: 13px;
+  }
+
+  .product-header-price {
+    font-size: 12px;
+  }
+
+  .product-stock-info {
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 4px;
   }
 }

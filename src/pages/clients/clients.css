@@ -14,6 +14,7 @@
   --radius: 12px;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -252,7 +253,7 @@
   border: 1px solid var(--border);
 }
 
-/* 🔥 BUSCADOR */
+/* === BUSCADOR === */
 .clients-search-container {
   margin-bottom: 20px;
 }
@@ -310,42 +311,40 @@
   background: var(--bg-page);
 }
 
-/* 🔥 GRID DE CLIENTES - TARJETAS EN COLUMNAS */
+/* ==========================================
+   🎨 TARJETA DE CLIENTE - OPCIÓN 4 (SOMBRA ELEVADA)
+   ========================================== */
 .clients-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
 }
 
-/* 🔥 TARJETA COMPACTA - CADA UNA INDEPENDIENTE */
-.clients-card-compact {
+.client-card-elevated {
   background: var(--bg-card);
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--primary);
-  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  width: 100%;
 }
 
-.clients-card-compact:hover {
-  box-shadow: var(--shadow-md);
+.client-card-elevated:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
 }
 
-.clients-card-compact.inactive {
-  border-left-color: var(--warning);
+.client-card-elevated.inactive {
   background: #fffdf5;
 }
 
-.clients-card-compact.expanded {
-  border-left-color: var(--primary);
-  box-shadow: var(--shadow-md);
+.client-card-elevated.expanded {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-/* Vista compacta (siempre visible) */
-.clients-compact-view {
+/* Vista compacta */
+.client-compact-view {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -353,7 +352,7 @@
   gap: 12px;
 }
 
-.clients-compact-info {
+.client-compact-info {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -361,8 +360,7 @@
   min-width: 0;
 }
 
-/* 🔥 Foto PEQUEÑA en vista compacta */
-.clients-compact-avatar {
+.client-compact-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -371,7 +369,7 @@
   flex-shrink: 0;
 }
 
-.clients-compact-name {
+.client-compact-name {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -379,7 +377,7 @@
   min-width: 0;
 }
 
-.clients-compact-name strong {
+.client-compact-name strong {
   font-size: 14px;
   color: var(--text-dark);
   white-space: nowrap;
@@ -387,64 +385,7 @@
   text-overflow: ellipsis;
 }
 
-.clients-compact-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.clients-compact-actions button {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-medium);
-}
-
-.clients-compact-actions button:hover {
-  background: var(--bg-page);
-}
-
-.clients-btn-edit:hover {
-  border-color: var(--warning);
-  color: var(--warning);
-}
-
-.clients-btn-delete:hover {
-  border-color: var(--danger);
-  color: var(--danger);
-}
-
-.clients-btn-pay {
-  border-color: var(--danger) !important;
-  color: var(--danger) !important;
-}
-
-.clients-btn-pay:hover {
-  background: #fee2e2 !important;
-}
-
-.clients-expand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  color: var(--text-light);
-  transition: var(--transition);
-}
-
-.clients-card-compact.expanded .clients-expand-icon {
-  color: var(--primary);
-}
-
-/* Badges */
-.clients-badge {
+.client-badge {
   font-size: 10px;
   padding: 2px 8px;
   border-radius: 12px;
@@ -459,8 +400,64 @@
   color: #b91c1c !important;
 }
 
-/* 🔥 VISTA EXPANDIDA - SE DESPLIEGA DENTRO DE LA MISMA TARJETA */
-.clients-expanded-view {
+.client-compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.client-compact-actions button {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium);
+}
+
+.client-compact-actions button:hover {
+  background: var(--bg-page);
+}
+
+.client-btn-edit:hover {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.client-btn-delete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.client-btn-pay {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.client-btn-pay:hover {
+  background: #fee2e2 !important;
+}
+
+.client-expand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.client-card-elevated.expanded .client-expand-icon {
+  color: var(--primary);
+}
+
+/* Vista expandida */
+.client-expanded-view {
   padding: 16px 16px 16px 16px;
   border-top: 1px solid var(--border);
   animation: slideDown 0.25s ease-out;
@@ -479,8 +476,7 @@
   }
 }
 
-/* 🔥 Foto GRANDE en vista expandida */
-.clients-expanded-photo {
+.client-expanded-photo {
   width: 100%;
   margin-bottom: 16px;
   border-radius: 10px;
@@ -489,7 +485,7 @@
   background: var(--bg-page);
 }
 
-.clients-expanded-image {
+.client-expanded-image {
   width: 100%;
   max-height: 250px;
   object-fit: cover;
@@ -497,13 +493,13 @@
   transition: var(--transition);
 }
 
-.clients-expanded-details {
+.client-expanded-details {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.clients-expanded-row {
+.client-expanded-row {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
@@ -511,18 +507,18 @@
   color: var(--text-medium);
 }
 
-.clients-expanded-row strong {
+.client-expanded-row strong {
   color: var(--text-dark);
 }
 
-.clients-expanded-notes {
+.client-expanded-notes {
   background: var(--bg-page);
   padding: 8px 12px;
   border-radius: 8px;
   font-style: italic;
 }
 
-.clients-expanded-last-order {
+.client-expanded-last-order {
   font-size: 12px;
   color: var(--text-light);
 }
@@ -599,18 +595,9 @@
 }
 
 /* ==========================================
-   📱 RESPONSIVE - TARJETAS EN COLUMNAS
+   📱 RESPONSIVE
    ========================================== */
 
-/* 🔥 Móvil: 1 columna */
-@media (max-width: 639px) {
-  .clients-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-}
-
-/* 🔥 Tablets y pantallas medianas: 2 columnas */
 @media (min-width: 640px) {
   .clients-form {
     grid-template-columns: 1fr 1fr;
@@ -625,12 +612,11 @@
     gap: 12px;
   }
 
-  .clients-expanded-image {
+  .client-expanded-image {
     max-height: 280px;
   }
 }
 
-/* 🔥 PC Escritorio: 3 columnas */
 @media (min-width: 1024px) {
   .clients-grid {
     grid-template-columns: 1fr 1fr 1fr;
@@ -641,19 +627,38 @@
     padding: 32px;
   }
 
-  .clients-expanded-image {
+  .client-expanded-image {
     max-height: 320px;
   }
 }
 
-/* 🔥 Pantallas muy grandes: 4 columnas */
 @media (min-width: 1400px) {
   .clients-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 18px;
   }
 
-  .clients-expanded-image {
+  .client-expanded-image {
     max-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-compact-view {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .client-compact-info {
+    flex: 1 1 100%;
+  }
+
+  .client-compact-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .client-compact-name strong {
+    font-size: 13px;
   }
 }

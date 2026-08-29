@@ -114,11 +114,11 @@ export default function Dashboard() {
   };
 
   let verdes = 0, amarillos = 0, rojos = 0;
-  filtered.forEach((o) => { 
-    const c = getOrderColor(o); 
-    if (c === "success") verdes++; 
-    if (c === "warning") amarillos++; 
-    if (c === "danger") rojos++; 
+  filtered.forEach((o) => {
+    const c = getOrderColor(o);
+    if (c === "success") verdes++;
+    if (c === "warning") amarillos++;
+    if (c === "danger") rojos++;
   });
   const totalSemaforo = filtered.length || 1;
   const pct = (n) => Math.round((n / totalSemaforo) * 100);
@@ -145,20 +145,20 @@ export default function Dashboard() {
 
   let histVerdes = 0, histAmarillos = 0, histRojos = 0;
   const finishedOrders = filtered.filter(o => o.status === "entregado" || o.status === "cancelado");
-  finishedOrders.forEach((o) => { 
-    const color = getHistoricalColor(o); 
-    if (color === "success") histVerdes++; 
-    if (color === "warning") histAmarillos++; 
-    if (color === "danger") histRojos++; 
+  finishedOrders.forEach((o) => {
+    const color = getHistoricalColor(o);
+    if (color === "success") histVerdes++;
+    if (color === "warning") histAmarillos++;
+    if (color === "danger") histRojos++;
   });
   const totalHistorico = finishedOrders.length || 1;
   const pctHist = (n) => Math.round((n / totalHistorico) * 100);
 
   // Rankings y otros
   const salesBySeller = {};
-  delivered.forEach((o) => { 
-    if (!salesBySeller[o.sellerName]) salesBySeller[o.sellerName] = 0; 
-    salesBySeller[o.sellerName] += o.total || 0; 
+  delivered.forEach((o) => {
+    if (!salesBySeller[o.sellerName]) salesBySeller[o.sellerName] = 0;
+    salesBySeller[o.sellerName] += o.total || 0;
   });
   const ranking = Object.entries(salesBySeller).map(([seller, total]) => ({ seller, total })).sort((a, b) => b.total - a.total);
   const bottleDebts = getAllDebts(users, orders);
@@ -166,11 +166,11 @@ export default function Dashboard() {
   const groupedExpenses = getAllExpensesGrouped();
   const expenseCategories = { gasolina: "Gasolina", reparacion: "Reparación", alimentacion: "Alimentación", peajes: "Peajes", otros: "Otros" };
 
-  const clearFilters = () => { 
-    setStartDate(""); 
-    setEndDate(""); 
-    setHour(""); 
-    addToast("Filtros limpiados", "success"); 
+  const clearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setHour("");
+    addToast("Filtros limpiados", "success");
   };
 
   return (
@@ -193,9 +193,9 @@ export default function Dashboard() {
             <label>Hora pico</label>
             <select value={hour} onChange={(e) => setHour(e.target.value)} className="dash-input">
               <option value="">Todas</option>
-              {[...Array(24)].map((_, i) => { 
-                const h = i.toString().padStart(2, "0"); 
-                return <option key={h} value={h}>{h}:00</option>; 
+              {[...Array(24)].map((_, i) => {
+                const h = i.toString().padStart(2, "0");
+                return <option key={h} value={h}>{h}:00</option>;
               })}
             </select>
           </div>
@@ -210,39 +210,39 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 1: KPI - VENTAS Y TIEMPOS
-          ESTILO: GRADIENTES DIFERENTES POR TARJETA
+          ESTILO: GRADIENTES DE COLOR (BONITOS)
           ============================================ */}
-      <div className="dash-section accent-success">
+      <div className="dash-section">
         <h3><Icons.Money size={18} /> Ventas y tiempos</h3>
         <div className="dash-grid">
-          <MetricCardGradient 
-            title="Ventas" 
-            value={`$${totalSales.toLocaleString()}`} 
-            gradient="blue"
+          <KPICard
+            title="Ventas"
+            value={`$${totalSales.toLocaleString()}`}
+            gradient="gradient-blue"
             icon={<Icons.Money size={22} />}
           />
-          <MetricCardGradient 
-            title="Pedidos" 
-            value={totalOrders} 
-            gradient="purple"
+          <KPICard
+            title="Pedidos"
+            value={totalOrders}
+            gradient="gradient-purple"
             icon={<Icons.Package size={22} />}
           />
-          <MetricCardGradient 
-            title="Prep Promedio" 
-            value={formatDuration(avgPrepSeconds)} 
-            gradient="green"
+          <KPICard
+            title="Prep Promedio"
+            value={formatDuration(avgPrepSeconds)}
+            gradient="gradient-green"
             icon={<Icons.Clock size={22} />}
           />
-          <MetricCardGradient 
-            title="Reparto Promedio" 
-            value={formatDuration(avgRepartoSecs)} 
-            gradient="orange"
+          <KPICard
+            title="Reparto Promedio"
+            value={formatDuration(avgRepartoSecs)}
+            gradient="gradient-orange"
             icon={<Icons.Clock size={22} />}
           />
-          <MetricCardGradient 
-            title="Total Promedio" 
-            value={formatDuration(avgTotalSecs)} 
-            gradient="pink"
+          <KPICard
+            title="Total Promedio"
+            value={formatDuration(avgTotalSecs)}
+            gradient="gradient-pink"
             icon={<Icons.Clock size={22} />}
           />
         </div>
@@ -250,26 +250,26 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 2: SEMÁFORO ESTADO ACTUAL
-          ESTILO: BORDE IZQUIERDO + ICONO DE ESTADO
+          ESTILO: OPCIÓN 3 - PUNTO DE COLOR LATERAL
           ============================================ */}
-      <div className="dash-section accent-warning">
+      <div className="dash-section">
         <h3><Icons.Clock size={18} /> Estado actual de pedidos (En curso)</h3>
         <div className="dash-grid">
-          <MetricCardLeftBorder 
-            title="En tiempo" 
-            value={`${verdes} (${pct(verdes)}%)`} 
+          <CardDot
+            title="En tiempo"
+            value={`${verdes} (${pct(verdes)}%)`}
             color="success"
             icon={<Icons.Check size={20} />}
           />
-          <MetricCardLeftBorder 
-            title="En riesgo" 
-            value={`${amarillos} (${pct(amarillos)}%)`} 
+          <CardDot
+            title="En riesgo"
+            value={`${amarillos} (${pct(amarillos)}%)`}
             color="warning"
             icon={<Icons.Warning size={20} />}
           />
-          <MetricCardLeftBorder 
-            title="Críticos" 
-            value={`${rojos} (${pct(rojos)}%)`} 
+          <CardDot
+            title="Críticos"
+            value={`${rojos} (${pct(rojos)}%)`}
             color="danger"
             icon={<Icons.Error size={20} />}
           />
@@ -278,32 +278,32 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 3: HISTORIAL DE EFICIENCIA
-          ESTILO: MARCO COMPLETO + SOMBRA ELEVADA
+          ESTILO: OPCIÓN 1 - BORDE COMPLETO + GLOW
           ============================================ */}
-      <div className="dash-section accent-purple">
+      <div className="dash-section">
         <h3><Icons.Check size={18} /> Historial de Eficiencia (Finalizados)</h3>
-        <p style={{fontSize: "13px", color: "#64748b", marginTop: "-10px", marginBottom: "15px"}}>
+        <p style={{ fontSize: "13px", color: "#64748b", marginTop: "-10px", marginBottom: "15px" }}>
           Evalúa si los pedidos entregados cumplieron los tiempos límite durante su proceso.
         </p>
         {finishedOrders.length === 0 ? (
           <EmptyState icon={<Icons.Info size={32} />} title="Sin datos" description="No hay pedidos finalizados para evaluar en este período." />
         ) : (
           <div className="dash-grid">
-            <MetricCardElevated 
-              title="A tiempo" 
-              value={`${histVerdes} (${pctHist(histVerdes)}%)`} 
+            <CardGlow
+              title="A tiempo"
+              value={`${histVerdes} (${pctHist(histVerdes)}%)`}
               color="success"
               icon={<Icons.Check size={20} />}
             />
-            <MetricCardElevated 
-              title="En riesgo" 
-              value={`${histAmarillos} (${pctHist(histAmarillos)}%)`} 
+            <CardGlow
+              title="En riesgo"
+              value={`${histAmarillos} (${pctHist(histAmarillos)}%)`}
               color="warning"
               icon={<Icons.Warning size={20} />}
             />
-            <MetricCardElevated 
-              title="Críticos" 
-              value={`${histRojos} (${pctHist(histRojos)}%)`} 
+            <CardGlow
+              title="Críticos"
+              value={`${histRojos} (${pctHist(histRojos)}%)`}
               color="danger"
               icon={<Icons.Error size={20} />}
             />
@@ -313,13 +313,13 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 4: RANKING DE VENDEDORES
-          ESTILO: TARJETA CON AVATAR + BADGE FLOTANTE
+          ESTILO: NUEVO - SIN REPETIR INFORMACIÓN
           ============================================ */}
-      <div className="dash-section accent-purple">
+      <div className="dash-section">
         <h3><Icons.Users size={18} /> Ranking de vendedores</h3>
         {ranking.length === 0 && <EmptyState icon={<Icons.Users size={32} />} title="Sin ventas" description="No hay ventas en este filtro." />}
         {ranking.map((item, index) => (
-          <RankingCardAvatar 
+          <RankingCard
             key={item.seller}
             seller={item.seller}
             total={item.total}
@@ -330,14 +330,14 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 5: GASTOS POR VENDEDOR
-          ESTILO: AVATAR + BADGE (ya está)
+          ESTILO: GRADIENTE AZUL/CORAL (LOGO) + EXPANSIÓN
           ============================================ */}
       {(user?.role === "admin" || user?.role === "planta") && Object.keys(groupedExpenses).length > 0 && (
-        <div className="dash-section accent-danger">
+        <div className="dash-section">
           <h3><Icons.Money size={18} /> Gastos por vendedor</h3>
           <div className="dash-expenses-grid">
             {Object.entries(groupedExpenses).map(([sellerId, data]) => (
-              <ExpenseCardAvatar 
+              <ExpenseCard
                 key={sellerId}
                 name={data.sellerName}
                 total={data.total}
@@ -351,23 +351,23 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 6: CLIENTES INACTIVOS
-          ESTILO: BORDE COMPLETO + GLOW
+          ESTILO: OPCIÓN 1 - BORDE COMPLETO + GLOW
           ============================================ */}
       {(user?.role === "admin" || user?.role === "planta") && inactiveClients.length > 0 && (
-        <div className="dash-section accent-danger">
+        <div className="dash-section">
           <h3><Icons.User size={18} /> Clientes inactivos</h3>
           <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "15px" }}>
             Estos clientes han superado el tiempo límite sin realizar pedidos.
           </p>
           {inactiveClients.map(client => {
             const lastOrder = orders.filter(o => o.clientId === client.id || o.clientData?.id === client.id)
-              .sort((a, b) => { 
-                let dA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt); 
-                let dB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt); 
-                return dB - dA; 
+              .sort((a, b) => {
+                let dA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                let dB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                return dB - dA;
               })[0];
             return (
-              <ClientInactiveCard 
+              <ClientInactiveCard
                 key={client.id}
                 client={client}
                 lastOrder={lastOrder}
@@ -379,28 +379,23 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 7: STOCK
-          ESTILO: MARCO COMPLETO + SOMBRA
+          ESTILO: OPCIÓN 4 - SOMBRA ELEVADA
           ============================================ */}
       {(user?.role === "admin" || user?.role === "planta") && (
-        <div className="dash-section accent-cyan">
+        <div className="dash-section">
           <h3><Icons.Package size={18} /> Stock actual de productos</h3>
           {products.length === 0 ? (
             <EmptyState icon={<Icons.Package size={32} />} title="Sin stock" description="No hay productos registrados." />
           ) : (
             <div className="dash-grid-small">
-              {products.map((product) => {
-                const stock = product.stock || 0;
-                const colorClass = stock <= 10 ? "text-danger" : stock <= 20 ? "text-warning" : "text-success";
-                return (
-                  <StockCard 
-                    key={product.id}
-                    name={product.name}
-                    stock={stock}
-                    price={product.price}
-                    colorClass={colorClass}
-                  />
-                );
-              })}
+              {products.map((product) => (
+                <StockCard
+                  key={product.id}
+                  name={product.name}
+                  stock={product.stock || 0}
+                  price={product.price}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -408,17 +403,17 @@ export default function Dashboard() {
 
       {/* ============================================
           SECCIÓN 8: DEUDAS BOTELLONES
-          ESTILO: FOTO DE FONDO (BLUR)
+          ESTILO: OPCIÓN 3 - PUNTO DE COLOR LATERAL
           ============================================ */}
       {(user?.role === "admin" || user?.role === "planta") && (
-        <div className="dash-section accent-cyan">
+        <div className="dash-section">
           <h3><Icons.Package size={18} /> Deudas de botellones vacíos</h3>
           {bottleDebts.length === 0 ? (
             <EmptyState icon={<Icons.Info size={32} />} title="Sin deudas" description="No hay deudas de botellones." />
           ) : (
             <div className="dash-grid-small">
               {bottleDebts.map((debt) => (
-                <DebtCardBlur 
+                <DebtCardDot
                   key={debt.sellerId}
                   sellerName={debt.sellerName}
                   totalSold={debt.totalSold}
@@ -435,34 +430,22 @@ export default function Dashboard() {
 }
 
 // ============================================
-// 🎨 COMPONENTES DE TARJETAS CON DIFERENTES ESTILOS
+// 🎨 KPI - TARJETAS CON GRADIENTE (BONITAS)
 // ============================================
-
-// -------------------------------------------
-// ESTILO 1: TARJETA CON GRADIENTE (KPI)
-// -------------------------------------------
-function MetricCardGradient({ title, value, gradient, icon }) {
-  const gradients = {
-    blue: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-    purple: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
-    green: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-    orange: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    pink: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-  };
-
+function KPICard({ title, value, gradient, icon }) {
   return (
-    <div className="dash-card-gradient" style={{ background: gradients[gradient] || gradients.blue }}>
-      <div className="dash-card-gradient-icon">{icon}</div>
-      <h4 className="dash-card-gradient-title">{title}</h4>
-      <h2 className="dash-card-gradient-value">{value}</h2>
+    <div className={`dash-card-gradient-kpi ${gradient}`}>
+      <div className="kpi-icon">{icon}</div>
+      <h4 className="kpi-title">{title}</h4>
+      <h2 className="kpi-value">{value}</h2>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 2: TARJETA CON BORDE IZQUIERDO (SEMÁFORO)
-// -------------------------------------------
-function MetricCardLeftBorder({ title, value, color, icon }) {
+// ============================================
+// 🎨 OPCIÓN 1: BORDE COMPLETO + GLOW
+// ============================================
+function CardGlow({ title, value, icon, color = "success" }) {
   const colors = {
     success: '#22c55e',
     warning: '#f59e0b',
@@ -470,137 +453,202 @@ function MetricCardLeftBorder({ title, value, color, icon }) {
   };
 
   return (
-    <div className="dash-card-left-border" style={{ borderLeftColor: colors[color] || colors.success }}>
-      <div className="dash-card-left-border-icon" style={{ color: colors[color] }}>{icon}</div>
-      <h4 className="dash-card-left-border-title">{title}</h4>
-      <h2 className="dash-card-left-border-value">{value}</h2>
+    <div className="dash-card-glow" style={{ borderColor: colors[color] || colors.success }}>
+      <div className="card-icon" style={{ color: colors[color] }}>{icon}</div>
+      <h4 className="card-title">{title}</h4>
+      <h2 className="card-value">{value}</h2>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 3: TARJETA CON SOMBRA ELEVADA (HISTORIAL)
-// -------------------------------------------
-function MetricCardElevated({ title, value, color, icon }) {
+// ============================================
+// 🎨 OPCIÓN 3: PUNTO DE COLOR LATERAL
+// ============================================
+function CardDot({ title, value, icon, color = "blue" }) {
   const colors = {
-    success: '#22c55e',
-    warning: '#f59e0b',
-    danger: '#ef4444',
+    success: 'dot-success',
+    warning: 'dot-warning',
+    danger: 'dot-danger',
+    blue: 'dot-blue',
+    purple: 'dot-purple',
+    coral: 'dot-coral',
   };
 
   return (
-    <div className="dash-card-elevated" style={{ borderTop: `4px solid ${colors[color] || colors.success}` }}>
-      <div className="dash-card-elevated-icon" style={{ color: colors[color] }}>{icon}</div>
-      <h4 className="dash-card-elevated-title">{title}</h4>
-      <h2 className="dash-card-elevated-value">{value}</h2>
+    <div className={`dash-card-dot ${colors[color] || 'dot-blue'}`}>
+      <div className="card-icon">{icon}</div>
+      <h4 className="card-title">{title}</h4>
+      <h2 className="card-value">{value}</h2>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 4: RANKING CON AVATAR + BADGE FLOTANTE
-// -------------------------------------------
-function RankingCardAvatar({ seller, total, index }) {
-  const initials = seller.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+// ============================================
+// 🎨 RANKING DE VENDEDORES - NUEVO DISEÑO
+// ============================================
+function RankingCard({ seller, total, index }) {
   const medals = ['🥇', '🥈', '🥉'];
+  const avatarColors = ['blue', 'green', 'orange', 'purple', 'pink', 'teal'];
+  const color = avatarColors[index % avatarColors.length];
+  const initials = seller.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const getRankClass = (idx) => {
+    if (idx === 0) return 'gold';
+    if (idx === 1) return 'silver';
+    if (idx === 2) return 'bronze';
+    return 'normal';
+  };
 
   return (
-    <div className="dash-ranking-avatar">
-      {index < 3 && <span className="dash-ranking-medal">{medals[index]}</span>}
-      <div className="dash-ranking-avatar-circle" style={{ 
-        background: index === 0 ? 'linear-gradient(135deg, #f59e0b, #d97706)' :
-                   index === 1 ? 'linear-gradient(135deg, #94a3b8, #64748b)' :
-                   index === 2 ? 'linear-gradient(135deg, #cd7f32, #b8860b)' :
-                   'linear-gradient(135deg, #2563eb, #1d4ed8)'
-      }}>
-        {initials}
+    <div className="dash-ranking-card">
+      <div className={`rank-number ${getRankClass(index)}`}>
+        {index < 3 ? medals[index] : `#${index + 1}`}
       </div>
-      <div className="dash-ranking-avatar-info">
-        <span className="dash-ranking-avatar-name">{seller}</span>
-        <span className="dash-ranking-avatar-amount">${total.toLocaleString()}</span>
-      </div>
-    </div>
-  );
-}
-
-// -------------------------------------------
-// ESTILO 5: TARJETA AVATAR + BADGE (GASTOS)
-// -------------------------------------------
-function ExpenseCardAvatar({ name, total, expenses, categories }) {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-
-  return (
-    <div className="dash-expense-card-avatar">
-      <div className="dash-expense-avatar">{initials}</div>
-      <div className="dash-expense-avatar-info">
-        <h4>{name}</h4>
-        <div className="dash-expense-avatar-total">Total: ${total.toLocaleString()}</div>
-        <div className="dash-expense-avatar-detail">
-          {Object.entries(expenses.reduce((acc, e) => { 
-            acc[e.category] = (acc[e.category] || 0) + (e.amount || 0); 
-            return acc; 
-          }, {})).slice(0, 3).map(([cat, total]) => (
-            <span key={cat} className="dash-expense-avatar-cat">
-              {categories[cat] || cat}: ${total.toLocaleString()}
-            </span>
-          ))}
-          {Object.keys(expenses.reduce((acc, e) => { 
-            acc[e.category] = (acc[e.category] || 0) + (e.amount || 0); 
-            return acc; 
-          }, {})).length > 3 && (
-            <span className="dash-expense-avatar-more">+ más</span>
-          )}
+      <div className="rank-info">
+        <div className={`rank-avatar ${color}`}>{initials}</div>
+        <div className="rank-detail">
+          <div className="seller">{seller}</div>
+          <div className="seller-amount">${total.toLocaleString()}</div>
         </div>
       </div>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 6: TARJETA BORDE COMPLETO + GLOW (CLIENTES INACTIVOS)
-// -------------------------------------------
+// ============================================
+// 🎨 GASTOS POR VENDEDOR (COLORES CORALINA) + EXPANSIÓN
+// ============================================
+function ExpenseCard({ name, total, expenses, categories }) {
+  const [expanded, setExpanded] = useState(false);
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const catSummary = expenses.reduce((acc, e) => {
+    acc[e.category] = (acc[e.category] || 0) + (e.amount || 0);
+    return acc;
+  }, {});
+
+  const entries = Object.entries(catSummary);
+  const mainCategories = entries.slice(0, 3);
+  const hasMore = entries.length > 3;
+
+  // Últimos 5 gastos
+  const recentExpenses = expenses
+    .sort((a, b) => {
+      const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date);
+      const dateB = b.date?.toDate ? b.date.toDate() : new Date(b.date);
+      return dateB - dateA;
+    })
+    .slice(0, 5);
+
+  return (
+    <div className="dash-expense-card">
+      <div className="expense-header" onClick={() => setExpanded(!expanded)} style={{ cursor: 'pointer' }}>
+        <div className="seller-initials">{initials}</div>
+        <span className="seller-name">{name}</span>
+        <span className="total-amount">${total.toLocaleString()}</span>
+        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '18px', marginLeft: '8px' }}>
+          {expanded ? '▲' : '▼'}
+        </span>
+      </div>
+      <div className="expense-body">
+        <div className="expense-tags">
+          {mainCategories.map(([cat, amt]) => (
+            <span key={cat} className="expense-tag">
+              {categories[cat] || cat}: ${amt.toLocaleString()}
+            </span>
+          ))}
+          {hasMore && <span className="expense-more">+{entries.length - 3} más</span>}
+        </div>
+
+        {/* EXPANSIÓN - HISTORIAL DE GASTOS RECIENTES */}
+        {expanded && (
+          <div className="expense-history" style={{ marginTop: '14px', borderTop: '1px solid #e2e8f0', paddingTop: '14px' }}>
+            <h5 style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b', marginBottom: '10px' }}>
+              Últimos gastos
+            </h5>
+            {recentExpenses.length === 0 ? (
+              <p style={{ fontSize: '12px', color: '#94a3b8' }}>No hay gastos registrados</p>
+            ) : (
+              recentExpenses.map((exp, idx) => (
+                <div key={idx} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '6px 0',
+                  borderBottom: idx < recentExpenses.length - 1 ? '1px solid #f1f5f9' : 'none',
+                  fontSize: '13px'
+                }}>
+                  <span style={{ color: '#475569' }}>
+                    {exp.concept}
+                    <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
+                      {categories[exp.category] || exp.category}
+                    </span>
+                  </span>
+                  <span style={{ fontWeight: '600', color: '#ef4444' }}>
+                    -${exp.amount?.toLocaleString()}
+                  </span>
+                </div>
+              ))
+            )}
+            <div style={{
+              fontSize: '11px',
+              color: '#94a3b8',
+              marginTop: '8px',
+              textAlign: 'right'
+            }}>
+              Total gastos: <strong style={{ color: '#ef4444' }}>${total.toLocaleString()}</strong>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 🎨 CLIENTES INACTIVOS (Opción 1: Glow)
+// ============================================
 function ClientInactiveCard({ client, lastOrder }) {
   return (
-    <div className="dash-inactive-card-glow">
-      <div className="dash-inactive-info">
+    <div className="dash-inactive-glow">
+      <div className="info">
         <strong>{client.name}</strong>
-        <div className="dash-inactive-sub">📞 {client.phone} {lastOrder?.sellerName && `• Último: ${lastOrder.sellerName}`}</div>
-        <div className="dash-inactive-sub">📅 Último pedido: {client.lastOrderDate?.toDate?.().toLocaleDateString() || (client.lastOrderDate ? new Date(client.lastOrderDate).toLocaleDateString() : "Nunca")}</div>
+        <div className="sub">📞 {client.phone} {lastOrder?.sellerName && `• Último: ${lastOrder.sellerName}`}</div>
+        <div className="sub">📅 Último pedido: {client.lastOrderDate?.toDate?.().toLocaleDateString() || (client.lastOrderDate ? new Date(client.lastOrderDate).toLocaleDateString() : "Nunca")}</div>
       </div>
-      <div className="dash-inactive-days">
-        <span className="dash-days-count">{client.daysInactive} días</span>
-        <span className="dash-days-label">Alerta cada {client.expectedDays}d</span>
+      <div className="days">
+        <span className="count">{client.daysInactive} días</span>
+        <span className="label">Alerta cada {client.expectedDays}d</span>
       </div>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 7: TARJETA MARCO COMPLETO (STOCK)
-// -------------------------------------------
-function StockCard({ name, stock, price, colorClass }) {
+// ============================================
+// 🎨 STOCK (Opción 4: Sombra elevada)
+// ============================================
+function StockCard({ name, stock, price }) {
+  const colorClass = stock <= 10 ? "text-danger" : stock <= 20 ? "text-warning" : "text-success";
+
   return (
-    <div className="dash-stock-card-elevated">
+    <div className="dash-stock-elevated">
       <h4>{name}</h4>
-      <p className={`dash-qty ${colorClass}`}>{stock} uds</p>
-      <p className="dash-price">${(price || 0).toLocaleString()}</p>
+      <p className={`qty ${colorClass}`}>{stock} uds</p>
+      <p className="price">${(price || 0).toLocaleString()}</p>
     </div>
   );
 }
 
-// -------------------------------------------
-// ESTILO 8: TARJETA FONDO BLUR (DEUDAS BOTELLONES)
-// -------------------------------------------
-function DebtCardBlur({ sellerName, totalSold, totalReported, debt }) {
+// ============================================
+// 🎨 DEUDAS BOTELLONES (Opción 3: Punto lateral)
+// ============================================
+function DebtCardDot({ sellerName, totalSold, totalReported, debt }) {
   return (
-    <div className="dash-debt-card-blur">
-      <div className="dash-debt-blur-bg"></div>
-      <div className="dash-debt-blur-overlay"></div>
-      <div className="dash-debt-blur-content">
+    <div className={`dash-debt-dot ${debt > 0 ? 'dot-danger' : 'dot-success'}`}>
+      <div className="content">
         <h4>{sellerName}</h4>
         <p>Vendidos: <strong>{totalSold}</strong></p>
         <p>Reportados: <strong>{totalReported}</strong></p>
-        <p className={`dash-debt-status ${debt > 0 ? "text-danger" : "text-success"}`}>
+        <p className={`status ${debt > 0 ? 'text-danger' : 'text-success'}`}>
           {debt > 0 ? `Debe: ${debt}` : "Sin deuda"}
         </p>
       </div>

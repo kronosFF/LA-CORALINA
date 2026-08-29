@@ -23,7 +23,7 @@ export default function Clients() {
   const [selectedPhotoName, setSelectedPhotoName] = useState("");
   const fileInputRef = useRef(null);
 
-  // 🔥 ESTADOS NUEVOS: BÚSQUEDA Y EXPANSIÓN
+  // Estados de búsqueda y expansión
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [expandedClientId, setExpandedClientId] = useState(null);
@@ -68,7 +68,7 @@ export default function Clients() {
   const handleEdit = (client) => {
     setForm({ id: client.id, name: client.name, phone: client.phone, address: client.address || "", location: client.location || "", notes: client.notes || "", email: client.email || "", alertDays: client.alertDays || "", prepMinutes: client.prepMinutes || "15", deliveryMinutes: client.deliveryMinutes || "30", photo: client.photo || null });
     setSelectedPhoto(client.photo || null); setEditing(true);
-    setExpandedClientId(null); // Cerrar expansión al editar
+    setExpandedClientId(null);
   };
 
   const handleDelete = (id) => { deleteClient(id); addToast("Cliente eliminado", "success"); };
@@ -84,7 +84,6 @@ export default function Clients() {
     return { daysDiff, isInactive: false };
   };
 
-  // Calcular deuda del cliente
   const getClientDebt = (clientId) => {
     const clientOrders = orders.filter(o =>
       (o.clientId === clientId || o.clientData?.id === clientId) &&
@@ -135,7 +134,6 @@ export default function Clients() {
     { value: "transferencia", label: "Transferencia" },
   ];
 
-  // 🔥 FILTRADO CON DEBOUNCE (optimizado)
   const filteredClients = useMemo(() => {
     if (!debouncedSearch.trim()) return clients;
     const term = debouncedSearch.toLowerCase().trim();
@@ -146,7 +144,6 @@ export default function Clients() {
     );
   }, [clients, debouncedSearch]);
 
-  // 🔥 Alternar expansión de tarjeta (solo una a la vez)
   const toggleExpand = (clientId) => {
     setExpandedClientId(expandedClientId === clientId ? null : clientId);
   };
@@ -210,7 +207,6 @@ export default function Clients() {
         <span className="clients-count">{filteredClients.length} clientes</span>
       </div>
 
-      {/* 🔥 BUSCADOR */}
       <div className="clients-search-container">
         <div className="clients-search-box">
           <Icons.Search size={18} />
@@ -237,7 +233,7 @@ export default function Clients() {
         />
       )}
 
-      {/* 🔥 GRID DE CLIENTES (TARJETAS COMPACTAS) */}
+      {/* GRID DE CLIENTES - NUEVO DISEÑO OPCIÓN 4 */}
       <div className="clients-grid">
         {filteredClients.map((client) => {
           const isExpanded = expandedClientId === client.id;
@@ -245,105 +241,17 @@ export default function Clients() {
           const clientDebt = getClientDebt(client.id);
 
           return (
-            <div
+            <ClientCard
               key={client.id}
-              className={`clients-card-compact ${isExpanded ? "expanded" : ""} ${inactiveStatus?.isInactive ? "inactive" : ""}`}
-              onClick={() => toggleExpand(client.id)}
-            >
-              {/* 🔥 VISTA COMPACTA (SIEMPRE VISIBLE) */}
-              <div className="clients-compact-view">
-                <div className="clients-compact-info">
-                  {/* Foto pequeña en vista compacta */}
-                  {client.photo && (
-                    <img src={client.photo} alt={client.name} className="clients-compact-avatar" />
-                  )}
-                  <div className="clients-compact-name">
-                    <strong>{client.name}</strong>
-                    {inactiveStatus?.isInactive && (
-                      <span className="clients-badge">{inactiveStatus.daysDiff}d sin pedir</span>
-                    )}
-                    {clientDebt > 0 && (
-                      <span className="clients-badge debt-badge">Debe: ${clientDebt.toLocaleString()}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="clients-compact-actions">
-                  <button
-                    className="clients-btn-edit"
-                    onClick={(e) => { e.stopPropagation(); handleEdit(client); }}
-                  >
-                    <Icons.Edit size={16} />
-                  </button>
-                  <button
-                    className="clients-btn-delete"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(client.id); }}
-                  >
-                    <Icons.Trash size={16} />
-                  </button>
-                  {clientDebt > 0 && (
-                    <button
-                      className="clients-btn-pay"
-                      onClick={(e) => { e.stopPropagation(); setPayingClient(client); setClientPayAmount(""); }}
-                    >
-                      <Icons.Money size={16} />
-                    </button>
-                  )}
-                  <span className="clients-expand-icon">
-                    {isExpanded ? <Icons.Cancel size={16} /> : <Icons.Plus size={16} />}
-                  </span>
-                </div>
-              </div>
-
-              {/* 🔥 VISTA EXPANDIDA (SE MUESTRA AL HACER CLIC) */}
-              {isExpanded && (
-                <div className="clients-expanded-view" onClick={(e) => e.stopPropagation()}>
-                  {/* 🔥 Foto GRANDE en la vista expandida */}
-                  {client.photo && (
-                    <div className="clients-expanded-photo">
-                      <img src={client.photo} alt={client.name} className="clients-expanded-image" />
-                    </div>
-                  )}
-
-                  <div className="clients-expanded-details">
-                    <div className="clients-expanded-row">
-                      <span><strong>Teléfono:</strong> {client.phone}</span>
-                      {client.email && <span><strong>Email:</strong> {client.email}</span>}
-                    </div>
-                    {client.address && (
-                      <div className="clients-expanded-row">
-                        <span><strong>Dirección:</strong> {client.address}</span>
-                      </div>
-                    )}
-                    {client.location && (
-                      <div className="clients-expanded-row">
-                        <span><strong>Ubicación:</strong> {client.location}</span>
-                      </div>
-                    )}
-                    <div className="clients-expanded-row">
-                      <span><strong>Prep:</strong> {client.prepMinutes || 15} min</span>
-                      <span><strong>Reparto:</strong> {client.deliveryMinutes || 30} min</span>
-                      {client.alertDays > 0 && (
-                        <span><strong>Alerta:</strong> cada {client.alertDays} días</span>
-                      )}
-                    </div>
-                    {client.notes && (
-                      <div className="clients-expanded-row clients-expanded-notes">
-                        <span><strong>Notas:</strong> {client.notes}</span>
-                      </div>
-                    )}
-                    {client.lastOrderDate && (
-                      <div className="clients-expanded-row clients-expanded-last-order">
-                        <span><strong>Último pedido:</strong> {
-                          client.lastOrderDate?.toDate ?
-                            client.lastOrderDate.toDate().toLocaleDateString() :
-                            new Date(client.lastOrderDate).toLocaleDateString()
-                        }</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              client={client}
+              isExpanded={isExpanded}
+              inactiveStatus={inactiveStatus}
+              clientDebt={clientDebt}
+              onToggleExpand={toggleExpand}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPay={() => { setPayingClient(client); setClientPayAmount(""); }}
+            />
           );
         })}
       </div>
@@ -377,6 +285,110 @@ export default function Clients() {
             <p style={{ fontSize: "11px", color: "#94a3b8", marginTop: "12px", textAlign: "center" }}>
               * Se abonará al pedido más antiguo pendiente de este cliente.
             </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// 🎨 TARJETA DE CLIENTE - OPCIÓN 4 (SOMBRA ELEVADA)
+// ============================================
+function ClientCard({ client, isExpanded, inactiveStatus, clientDebt, onToggleExpand, onEdit, onDelete, onPay }) {
+  return (
+    <div
+      className={`client-card-elevated ${isExpanded ? "expanded" : ""} ${inactiveStatus?.isInactive ? "inactive" : ""}`}
+      onClick={() => onToggleExpand(client.id)}
+    >
+      {/* Vista compacta */}
+      <div className="client-compact-view">
+        <div className="client-compact-info">
+          {client.photo && (
+            <img src={client.photo} alt={client.name} className="client-compact-avatar" />
+          )}
+          <div className="client-compact-name">
+            <strong>{client.name}</strong>
+            {inactiveStatus?.isInactive && (
+              <span className="client-badge">{inactiveStatus.daysDiff}d sin pedir</span>
+            )}
+            {clientDebt > 0 && (
+              <span className="client-badge debt-badge">Debe: ${clientDebt.toLocaleString()}</span>
+            )}
+          </div>
+        </div>
+        <div className="client-compact-actions">
+          <button
+            className="client-btn-edit"
+            onClick={(e) => { e.stopPropagation(); onEdit(client); }}
+          >
+            <Icons.Edit size={16} />
+          </button>
+          <button
+            className="client-btn-delete"
+            onClick={(e) => { e.stopPropagation(); onDelete(client.id); }}
+          >
+            <Icons.Trash size={16} />
+          </button>
+          {clientDebt > 0 && (
+            <button
+              className="client-btn-pay"
+              onClick={(e) => { e.stopPropagation(); onPay(); }}
+            >
+              <Icons.Money size={16} />
+            </button>
+          )}
+          <span className="client-expand-icon">
+            {isExpanded ? <Icons.Cancel size={16} /> : <Icons.Plus size={16} />}
+          </span>
+        </div>
+      </div>
+
+      {/* Vista expandida */}
+      {isExpanded && (
+        <div className="client-expanded-view" onClick={(e) => e.stopPropagation()}>
+          {client.photo && (
+            <div className="client-expanded-photo">
+              <img src={client.photo} alt={client.name} className="client-expanded-image" />
+            </div>
+          )}
+
+          <div className="client-expanded-details">
+            <div className="client-expanded-row">
+              <span><strong>Teléfono:</strong> {client.phone}</span>
+              {client.email && <span><strong>Email:</strong> {client.email}</span>}
+            </div>
+            {client.address && (
+              <div className="client-expanded-row">
+                <span><strong>Dirección:</strong> {client.address}</span>
+              </div>
+            )}
+            {client.location && (
+              <div className="client-expanded-row">
+                <span><strong>Ubicación:</strong> {client.location}</span>
+              </div>
+            )}
+            <div className="client-expanded-row">
+              <span><strong>Prep:</strong> {client.prepMinutes || 15} min</span>
+              <span><strong>Reparto:</strong> {client.deliveryMinutes || 30} min</span>
+              {client.alertDays > 0 && (
+                <span><strong>Alerta:</strong> cada {client.alertDays} días</span>
+              )}
+            </div>
+            {client.notes && (
+              <div className="client-expanded-row client-expanded-notes">
+                <span><strong>Notas:</strong> {client.notes}</span>
+              </div>
+            )}
+            {client.lastOrderDate && (
+              <div className="client-expanded-row client-expanded-last-order">
+                <span><strong>Último pedido:</strong> {
+                  client.lastOrderDate?.toDate ?
+                    client.lastOrderDate.toDate().toLocaleDateString() :
+                    new Date(client.lastOrderDate).toLocaleDateString()
+                }</span>
+              </div>
+            )}
           </div>
         </div>
       )}

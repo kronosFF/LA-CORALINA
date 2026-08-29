@@ -35,15 +35,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 32px;
   border: 1px solid var(--border);
-  border-top: 5px solid var(--primary);
-}
-
-.stock-section.bottles-section {
-  border-top-color: #06b6d4;
-}
-
-.stock-section.history-section {
-  border-top-color: #8b5cf6;
 }
 
 .stock-section>h2 {
@@ -113,7 +104,7 @@
 .stock-input {
   width: 100%;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 13px;
   border: 1.5px solid var(--border);
   border-radius: 12px;
   outline: none;
@@ -176,14 +167,17 @@ select.stock-input {
 /* === GRIDS DE INVENTARIO Y DEUDAS === */
 .stock-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
   margin-top: 16px;
 }
 
+/* ==========================================
+   🎨 TARJETA DE PRODUCTO (STOCK) - LETRA PEQUEÑA
+   ========================================== */
 .stock-product-card {
   background: #fff;
-  padding: 16px;
+  padding: 14px;
   border-radius: 14px;
   text-align: center;
   border: 1px solid var(--border);
@@ -196,18 +190,26 @@ select.stock-input {
 }
 
 .stock-product-card h4 {
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.stock-qty {
-  font-size: 28px;
+.stock-product-card .stock-qty {
+  font-size: 22px;
   font-weight: 800;
-  margin: 8px 0;
+  margin: 6px 0;
   line-height: 1;
+}
+
+.stock-product-card .stock-price {
+  color: var(--text-light);
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 .stock-high {
@@ -222,37 +224,30 @@ select.stock-input {
   color: var(--danger);
 }
 
-.stock-price {
-  color: var(--text-light);
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-/* Deudas */
+/* === DEUDAS === */
 .debt-card {
   background: #fff;
-  padding: 16px;
+  padding: 14px;
   border-radius: 14px;
   text-align: center;
   border: 1px solid var(--border);
 }
 
 .debt-card h4 {
-  margin-bottom: 12px;
-  font-size: 15px;
+  font-size: 13px;
+  margin-bottom: 10px;
 }
 
 .debt-card p {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-medium);
   margin-bottom: 4px;
 }
 
 .debt-status {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .debt-pending {
@@ -283,30 +278,54 @@ select.stock-input {
   cursor: pointer;
 }
 
-/* === TIMELINE DE MOVIMIENTOS === */
-.movement-card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-  border-left: 5px solid var(--text-light);
-  transition: box-shadow 0.2s;
+/* ==========================================
+   🎨 HISTORIAL - OPCIÓN 1: BORDE + GLOW
+   ========================================== */
+
+/* GRID DE 3 COLUMNAS */
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 16px;
 }
 
-.movement-card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+/* Tarjeta con borde + glow */
+.history-card-glow {
+  background: var(--bg-card);
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
 }
 
-.movement-card.movement-out {
-  border-left-color: var(--danger);
+.history-card-glow:hover {
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary);
+  transform: translateY(-2px);
 }
 
-.movement-card.movement-in {
-  border-left-color: var(--success);
+.history-card-glow.movement-in {
+  border-color: #86efac;
 }
 
-.movement-header {
+.history-card-glow.movement-in:hover {
+  border-color: var(--success);
+  box-shadow: 0 0 25px rgba(22, 163, 74, 0.12);
+}
+
+.history-card-glow.movement-out {
+  border-color: #fca5a5;
+}
+
+.history-card-glow.movement-out:hover {
+  border-color: var(--danger);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.12);
+}
+
+/* Cabecera de la tarjeta */
+.history-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -314,15 +333,21 @@ select.stock-input {
   gap: 8px;
 }
 
-.movement-product {
-  font-size: 15px;
-  font-weight: 700;
+.history-card-header strong {
+  font-size: 14px;
+  color: var(--text-dark);
 }
 
-.movement-badge {
-  padding: 4px 10px;
+.history-product-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.history-badge {
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   margin-left: 8px;
 }
@@ -337,9 +362,9 @@ select.stock-input {
   color: #b91c1c;
 }
 
-.movement-qty {
+.history-qty {
   font-weight: 800;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .qty-in {
@@ -350,15 +375,23 @@ select.stock-input {
   color: var(--danger);
 }
 
-.movement-comment {
-  font-size: 13px;
+.history-qty-in {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--success);
+}
+
+/* Comentario */
+.history-card-comment {
+  font-size: 12px;
   color: var(--text-medium);
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px dashed var(--border);
 }
 
-.movement-meta {
+/* Metadatos */
+.history-card-meta {
   font-size: 11px;
   color: var(--text-light);
   margin-top: 8px;
@@ -371,17 +404,23 @@ select.stock-input {
    📱 RESPONSIVE
    ========================================== */
 
+/* Tablets: 2 columnas */
 @media (min-width: 640px) {
   .stock-form {
     grid-template-columns: 1fr 1fr;
   }
 
   .stock-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .history-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 900px) {
+/* Escritorio: 3 columnas */
+@media (min-width: 1024px) {
   .stock-form {
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -389,4 +428,82 @@ select.stock-input {
   .stock-form .full-width {
     grid-column: 1 / -1;
   }
+
+  .stock-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .history-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Pantallas grandes: 4 columnas para historial */
+@media (min-width: 1400px) {
+  .history-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Móvil: ajustes */
+@media (max-width: 480px) {
+  .stock-product-card h4 {
+    font-size: 11px;
+  }
+
+  .stock-product-card .stock-qty {
+    font-size: 18px;
+  }
+
+  .history-card-header strong {
+    font-size: 13px;
+  }
+
+  .history-product-name {
+    font-size: 12px;
+  }
+
+  .history-qty {
+    font-size: 16px;
+  }
+
+  .history-qty-in {
+    font-size: 16px;
+  }
+
+  .history-card-glow {
+    padding: 14px;
+  }
+}
+
+/* === CONTADOR Y PAGINACIÓN === */
+.history-counter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.history-page-badge {
+  font-size: 11px;
+  background: var(--bg-page);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.history-all-loaded {
+  text-align: center;
+  margin-top: 20px;
+  padding: 12px;
+  background: var(--bg-page);
+  border-radius: 10px;
+  color: var(--text-light);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
