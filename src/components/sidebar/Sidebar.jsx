@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import Icons from "../icons/Icons"; // 🆕 Importamos el componente central
+import Icons from "../icons/Icons";
 import logo from "../../assets/logoCoralina.png";
-import './Sidebar.css';
+import "./Sidebar.css";
 
 export default function Sidebar({ closeSidebar }) {
   const navigate = useNavigate();
@@ -20,8 +20,18 @@ export default function Sidebar({ closeSidebar }) {
     if (closeSidebar) closeSidebar();
   };
 
-  const isAdminOrPlanta = user?.role === "admin" || user?.role === "planta";
+  // 🎭 Flags de rol
+  const isGerencia = user?.role === "gerencia";
+  const isPlanta = user?.role === "planta";
   const isVendedor = user?.role === "vendedor";
+  const isProduccion = user?.role === "produccion";
+
+  // Agrupadores
+  const canSeePedidos = isGerencia || isPlanta || isVendedor;
+  const canSeeGastos = isGerencia || isPlanta || isVendedor;
+  const canSeeInventario = isGerencia || isPlanta || isProduccion; // Productos y Stock
+  const canSeeClientes = isGerencia || isPlanta;
+  const canSeeUsuarios = isGerencia; // SOLO gerencia
 
   return (
     <div className="sidebar">
@@ -37,52 +47,71 @@ export default function Sidebar({ closeSidebar }) {
 
         {/* NAVEGACIÓN */}
         <nav className="sidebar-nav">
+          {/* Dashboard: todos */}
           <button className="sidebar-nav-btn" onClick={() => go("/")}>
             <Icons.Dashboard />
             Dashboard
           </button>
 
-          <button className="sidebar-nav-btn" onClick={() => go("/pedidos")}>
-            <Icons.Orders />
-            Pedidos
-          </button>
+          {/* Pedidos y Crear Pedido */}
+          {canSeePedidos && (
+            <>
+              <button
+                className="sidebar-nav-btn"
+                onClick={() => go("/pedidos")}
+              >
+                <Icons.Orders />
+                Pedidos
+              </button>
 
-          <button className="sidebar-nav-btn" onClick={() => go("/crear")}>
-            <Icons.CreateOrder />
-            Crear Pedido
-          </button>
+              <button className="sidebar-nav-btn" onClick={() => go("/crear")}>
+                <Icons.CreateOrder />
+                Crear Pedido
+              </button>
+            </>
+          )}
 
-          {/* Gastos - solo para vendedores */}
-          {isVendedor && (
+          {/* Gastos */}
+          {canSeeGastos && (
             <button className="sidebar-nav-btn" onClick={() => go("/gastos")}>
               <Icons.Expenses />
-              Mis Gastos
+              Gastos
             </button>
           )}
 
-          {/* Solo para admin y planta */}
-          {isAdminOrPlanta && (
-            <>
-              <button className="sidebar-nav-btn" onClick={() => go("/productos")}>
-                <Icons.Products />
-                Productos
-              </button>
+          {/* Productos */}
+          {canSeeInventario && (
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => go("/productos")}
+            >
+              <Icons.Products />
+              Productos
+            </button>
+          )}
 
-              <button className="sidebar-nav-btn" onClick={() => go("/clientes")}>
-                <Icons.Clients />
-                Clientes
-              </button>
+          {/* Clientes */}
+          {canSeeClientes && (
+            <button className="sidebar-nav-btn" onClick={() => go("/clientes")}>
+              <Icons.Clients />
+              Clientes
+            </button>
+          )}
 
-              <button className="sidebar-nav-btn" onClick={() => go("/stock")}>
-                <Icons.Stock />
-                Stock
-              </button>
+          {/* Stock */}
+          {canSeeInventario && (
+            <button className="sidebar-nav-btn" onClick={() => go("/stock")}>
+              <Icons.Stock />
+              Stock
+            </button>
+          )}
 
-              <button className="sidebar-nav-btn" onClick={() => go("/usuarios")}>
-                <Icons.Users />
-                Usuarios
-              </button>
-            </>
+          {/* Usuarios: SOLO gerencia */}
+          {canSeeUsuarios && (
+            <button className="sidebar-nav-btn" onClick={() => go("/usuarios")}>
+              <Icons.Users />
+              Usuarios
+            </button>
           )}
         </nav>
 

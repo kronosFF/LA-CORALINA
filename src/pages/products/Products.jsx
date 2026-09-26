@@ -9,9 +9,20 @@ import "./products.css";
 export default function Products() {
   const { user } = useContext(AuthContext);
   const { addToast } = useToast();
-  const { products, addProduct, updateProduct, updateProductImage, deleteProduct } = useContext(ProductContext);
+  const {
+    products,
+    addProduct,
+    updateProduct,
+    updateProductImage,
+    deleteProduct,
+  } = useContext(ProductContext);
 
-  if (user?.role !== "admin" && user?.role !== "planta") {
+  // ✅ VALIDACIÓN DE ROLES: admin, planta o produccion
+  if (
+    user?.role !== "gerencia" &&
+    user?.role !== "planta" &&
+    user?.role !== "produccion"
+  ) {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
         <p>No tienes acceso a esta sección</p>
@@ -19,27 +30,39 @@ export default function Products() {
     );
   }
 
-  const [form, setForm] = useState({ id: null, name: "", price: "", image: null });
+  const [form, setForm] = useState({
+    id: null,
+    name: "",
+    price: "",
+    image: null,
+  });
   const [editing, setEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageName, setSelectedImageName] = useState("");
   const fileInputRef = useRef(null);
 
-  const handleChange = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); };
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImageName(file.name);
       const reader = new FileReader();
-      reader.onloadend = () => { setSelectedImage(reader.result); setForm({ ...form, image: reader.result }); };
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+        setForm({ ...form, image: reader.result });
+      };
       reader.readAsDataURL(file);
     }
   };
 
   const resetForm = () => {
     setForm({ id: null, name: "", price: "", image: null });
-    setSelectedImage(null); setSelectedImageName(""); setEditing(false);
+    setSelectedImage(null);
+    setSelectedImageName("");
+    setEditing(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -53,8 +76,11 @@ export default function Products() {
     let success;
     if (editing) {
       success = await updateProduct(form);
-      if (success && selectedImage && form.id) await updateProductImage(form.id, selectedImage);
-    } else { success = await addProduct(form); }
+      if (success && selectedImage && form.id)
+        await updateProductImage(form.id, selectedImage);
+    } else {
+      success = await addProduct(form);
+    }
 
     if (success) {
       resetForm();
@@ -63,11 +89,19 @@ export default function Products() {
   };
 
   const handleEdit = (product) => {
-    setForm({ id: product.id, name: product.name, price: product.price, image: product.image || null });
-    setSelectedImage(product.image || null); setEditing(true);
+    setForm({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image || null,
+    });
+    setSelectedImage(product.image || null);
+    setEditing(true);
   };
 
-  const handleDelete = (id) => { deleteProduct(id); };
+  const handleDelete = (id) => {
+    deleteProduct(id);
+  };
 
   return (
     <div className="products-page">
@@ -93,7 +127,9 @@ export default function Products() {
           />
 
           <div className="photo-container">
-            <label className="photo-label"><Icons.Image size={18} /> Imagen del producto</label>
+            <label className="photo-label">
+              <Icons.Image size={18} /> Imagen del producto
+            </label>
             <div className="file-upload-wrapper">
               <label className="file-upload-label">
                 <Icons.Upload size={16} />
@@ -106,15 +142,27 @@ export default function Products() {
                   className="file-input-hidden"
                 />
               </label>
-              {selectedImageName && <span className="file-name">{selectedImageName}</span>}
-              {!selectedImageName && form.image && <span className="file-name">Imagen actual cargada</span>}
+              {selectedImageName && (
+                <span className="file-name">{selectedImageName}</span>
+              )}
+              {!selectedImageName && form.image && (
+                <span className="file-name">Imagen actual cargada</span>
+              )}
             </div>
             {(selectedImage || form.image) && (
               <div className="preview-container">
-                <img src={selectedImage || form.image} alt="Preview" className="preview-image" />
+                <img
+                  src={selectedImage || form.image}
+                  alt="Preview"
+                  className="preview-image"
+                />
                 <button
                   type="button"
-                  onClick={() => { setSelectedImage(null); setSelectedImageName(""); setForm({ ...form, image: null }); }}
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setSelectedImageName("");
+                    setForm({ ...form, image: null });
+                  }}
                   className="btn-remove"
                 >
                   <Icons.X size={14} />
@@ -129,7 +177,11 @@ export default function Products() {
               {editing ? "Actualizar" : "Crear"}
             </button>
             {editing && (
-              <button type="button" onClick={resetForm} className="btn-secondary">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="btn-secondary"
+              >
                 Cancelar
               </button>
             )}
@@ -168,38 +220,52 @@ function ProductCard({ product, onEdit, onDelete }) {
 
   // Colores pastel para el gradiente según stock
   const getGradientClass = (stock) => {
-    if (stock <= 5) return 'gradient-pastel-danger';
-    if (stock <= 15) return 'gradient-pastel-warning';
-    return 'gradient-pastel-success';
+    if (stock <= 5) return "gradient-pastel-danger";
+    if (stock <= 15) return "gradient-pastel-warning";
+    return "gradient-pastel-success";
   };
 
   const getStockLabel = (stock) => {
-    if (stock <= 5) return '⚠️ Stock crítico';
-    if (stock <= 15) return '⚠️ Stock bajo';
-    return '✅ Stock disponible';
+    if (stock <= 5) return "⚠️ Stock crítico";
+    if (stock <= 15) return "⚠️ Stock bajo";
+    return "✅ Stock disponible";
   };
 
   return (
     <div className="product-card-gradient">
       {/* Cabecera con gradiente pastel */}
-      <div className={`product-card-header ${getGradientClass(product.stock || 0)}`}>
+      <div
+        className={`product-card-header ${getGradientClass(product.stock || 0)}`}
+      >
         <div className="product-header-left">
           {product.image && (
-            <img src={product.image} alt={product.name} className="product-header-image" />
+            <img
+              src={product.image}
+              alt={product.name}
+              className="product-header-image"
+            />
           )}
           <div className="product-header-info">
             <h4 className="product-header-name">{product.name}</h4>
-            <span className="product-header-price">${(product.price || 0).toLocaleString()}</span>
+            <span className="product-header-price">
+              ${(product.price || 0).toLocaleString()}
+            </span>
           </div>
         </div>
         <div className="product-header-actions">
           <button className="product-btn-edit" onClick={() => onEdit(product)}>
             <Icons.Edit size={14} />
           </button>
-          <button className="product-btn-delete" onClick={() => onDelete(product.id)}>
+          <button
+            className="product-btn-delete"
+            onClick={() => onDelete(product.id)}
+          >
             <Icons.Trash size={14} />
           </button>
-          <button className="product-btn-expand" onClick={() => setExpanded(!expanded)}>
+          <button
+            className="product-btn-expand"
+            onClick={() => setExpanded(!expanded)}
+          >
             {expanded ? <Icons.Cancel size={14} /> : <Icons.Plus size={14} />}
           </button>
         </div>
@@ -208,7 +274,9 @@ function ProductCard({ product, onEdit, onDelete }) {
       {/* Cuerpo de la tarjeta */}
       <div className="product-card-body">
         <div className="product-stock-info">
-          <span className="product-stock-label">{getStockLabel(product.stock || 0)}</span>
+          <span className="product-stock-label">
+            {getStockLabel(product.stock || 0)}
+          </span>
           <span className="product-stock-number">{product.stock || 0} uds</span>
         </div>
 
@@ -216,13 +284,20 @@ function ProductCard({ product, onEdit, onDelete }) {
         {expanded && (
           <div className="product-expanded">
             <div className="product-expanded-row">
-              <span><strong>Nombre:</strong> {product.name}</span>
+              <span>
+                <strong>Nombre:</strong> {product.name}
+              </span>
             </div>
             <div className="product-expanded-row">
-              <span><strong>Precio:</strong> ${(product.price || 0).toLocaleString()}</span>
+              <span>
+                <strong>Precio:</strong> $
+                {(product.price || 0).toLocaleString()}
+              </span>
             </div>
             <div className="product-expanded-row">
-              <span><strong>Stock:</strong> {product.stock || 0} unidades</span>
+              <span>
+                <strong>Stock:</strong> {product.stock || 0} unidades
+              </span>
             </div>
             {product.image && (
               <div className="product-expanded-image">

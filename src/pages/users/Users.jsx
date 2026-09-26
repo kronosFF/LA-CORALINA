@@ -4,9 +4,19 @@ import Icons from "../../components/icons/Icons";
 import "./users.css";
 
 export default function Users() {
-  const { user, users, addUser, updateUser, updatePassword, deleteUser, toggleUserStatus, updateUserPhoto } = useContext(AuthContext);
+  const {
+    user,
+    users,
+    addUser,
+    updateUser,
+    updatePassword,
+    deleteUser,
+    toggleUserStatus,
+    updateUserPhoto,
+  } = useContext(AuthContext);
 
-  if (user?.role !== "admin" && user?.role !== "planta") {
+  // 🎭 SOLO gerencia puede entrar aquí
+  if (user?.role !== "gerencia") {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
         <p>No tienes acceso a esta sección</p>
@@ -132,9 +142,12 @@ export default function Users() {
     deleteUser(id);
   };
 
-  const isLastAdmin = () => {
-    const adminCount = users.filter(u => u.role === "admin" && u.active === true).length;
-    return adminCount === 1 && user.role === "admin";
+  // 🎭 Cuenta cuántos gerentes activos hay (para proteger al último)
+  const isLastGerencia = () => {
+    const gerenciaCount = users.filter(
+      (u) => u.role === "gerencia" && u.active === true,
+    ).length;
+    return gerenciaCount === 1 && user.role === "gerencia";
   };
 
   return (
@@ -151,7 +164,9 @@ export default function Users() {
       {/* FORMULARIO DE CREACIÓN */}
       {creating && (
         <div className="form-card">
-          <h3><Icons.Plus size={18} /> Nuevo usuario</h3>
+          <h3>
+            <Icons.Plus size={18} /> Nuevo usuario
+          </h3>
           <form onSubmit={handleCreate} className="form">
             <input
               name="name"
@@ -175,14 +190,22 @@ export default function Users() {
               onChange={handleChange}
               className="input"
             />
-            <select name="role" value={form.role} onChange={handleChange} className="input">
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="input"
+            >
               <option value="vendedor">Vendedor</option>
               <option value="planta">Planta</option>
-              <option value="admin">Admin</option>
+              <option value="produccion">Producción</option>
+              <option value="gerencia">Gerencia</option>
             </select>
 
             <div className="photo-upload-container">
-              <label className="photo-label"><Icons.Image size={18} /> Foto de perfil (opcional)</label>
+              <label className="photo-label">
+                <Icons.Image size={18} /> Foto de perfil (opcional)
+              </label>
               <div className="file-upload-wrapper">
                 <label className="file-upload-label">
                   <Icons.Upload size={16} />
@@ -195,12 +218,22 @@ export default function Users() {
                     className="file-input-hidden"
                   />
                 </label>
-                {selectedPhotoName && <span className="file-name">{selectedPhotoName}</span>}
+                {selectedPhotoName && (
+                  <span className="file-name">{selectedPhotoName}</span>
+                )}
               </div>
               {selectedPhoto && (
                 <div className="preview-container">
-                  <img src={selectedPhoto} alt="Preview" className="preview-image" />
-                  <button type="button" onClick={handleRemovePhoto} className="btn-remove">
+                  <img
+                    src={selectedPhoto}
+                    alt="Preview"
+                    className="preview-image"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="btn-remove"
+                  >
                     <Icons.X size={14} />
                     Eliminar
                   </button>
@@ -209,8 +242,16 @@ export default function Users() {
             </div>
 
             <div className="button-group">
-              <button type="submit" className="btn-primary">Crear usuario</button>
-              <button type="button" onClick={resetForm} className="btn-secondary">Cancelar</button>
+              <button type="submit" className="btn-primary">
+                Crear usuario
+              </button>
+              <button
+                type="button"
+                onClick={resetForm}
+                className="btn-secondary"
+              >
+                Cancelar
+              </button>
             </div>
           </form>
         </div>
@@ -219,8 +260,12 @@ export default function Users() {
       {/* FORMULARIO DE EDICIÓN */}
       {editing && (
         <div className="form-card">
-          <h3><Icons.Edit size={18} /> Editar usuario</h3>
-          <div className="warning-text">El nombre de usuario NO se puede cambiar.</div>
+          <h3>
+            <Icons.Edit size={18} /> Editar usuario
+          </h3>
+          <div className="warning-text">
+            El nombre de usuario NO se puede cambiar.
+          </div>
           <form onSubmit={handleUpdate} className="form">
             <input
               name="name"
@@ -236,14 +281,22 @@ export default function Users() {
               className="input input-disabled"
               disabled
             />
-            <select name="role" value={form.role} onChange={handleChange} className="input">
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="input"
+            >
               <option value="vendedor">Vendedor</option>
               <option value="planta">Planta</option>
-              <option value="admin">Admin</option>
+              <option value="produccion">Producción</option>
+              <option value="gerencia">Gerencia</option>
             </select>
 
             <div className="photo-upload-container">
-              <label className="photo-label"><Icons.Image size={18} /> Foto de perfil</label>
+              <label className="photo-label">
+                <Icons.Image size={18} /> Foto de perfil
+              </label>
               <div className="file-upload-wrapper">
                 <label className="file-upload-label">
                   <Icons.Upload size={16} />
@@ -256,13 +309,25 @@ export default function Users() {
                     className="file-input-hidden"
                   />
                 </label>
-                {selectedPhotoName && <span className="file-name">{selectedPhotoName}</span>}
-                {!selectedPhotoName && form.photo && <span className="file-name">Foto actual cargada</span>}
+                {selectedPhotoName && (
+                  <span className="file-name">{selectedPhotoName}</span>
+                )}
+                {!selectedPhotoName && form.photo && (
+                  <span className="file-name">Foto actual cargada</span>
+                )}
               </div>
               {(selectedPhoto || form.photo) && (
                 <div className="preview-container">
-                  <img src={selectedPhoto || form.photo} alt="Preview" className="preview-image" />
-                  <button type="button" onClick={handleRemovePhoto} className="btn-remove">
+                  <img
+                    src={selectedPhoto || form.photo}
+                    alt="Preview"
+                    className="preview-image"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="btn-remove"
+                  >
                     <Icons.X size={14} />
                     Eliminar foto
                   </button>
@@ -275,15 +340,25 @@ export default function Users() {
                 <input
                   type="checkbox"
                   checked={form.active}
-                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                  onChange={(e) =>
+                    setForm({ ...form, active: e.target.checked })
+                  }
                   style={{ marginRight: "8px" }}
                 />
                 Usuario activo (puede iniciar sesión)
               </label>
             </div>
             <div className="button-group">
-              <button type="submit" className="btn-primary">Actualizar</button>
-              <button type="button" onClick={resetForm} className="btn-secondary">Cancelar</button>
+              <button type="submit" className="btn-primary">
+                Actualizar
+              </button>
+              <button
+                type="button"
+                onClick={resetForm}
+                className="btn-secondary"
+              >
+                Cancelar
+              </button>
             </div>
           </form>
         </div>
@@ -300,12 +375,14 @@ export default function Users() {
               key={u.id}
               user={u}
               isSelf={isSelf}
-              isLastAdmin={isLastAdmin()}
+              isLastGerencia={isLastGerencia()}
               onEdit={handleEdit}
               onToggle={handleToggle}
               onDelete={handleDelete}
               onPasswordChange={(id) => {
-                const newPass = prompt("Ingrese nueva contraseña para " + u.username);
+                const newPass = prompt(
+                  "Ingrese nueva contraseña para " + u.username,
+                );
                 if (newPass) updatePassword(id, newPass);
               }}
             />
@@ -315,7 +392,8 @@ export default function Users() {
 
       <div className="security-note">
         <Icons.Lock size={16} />
-        <strong>Nota de seguridad:</strong> No puedes modificar, bloquear o eliminar tu propio usuario.
+        <strong>Nota de seguridad:</strong> No puedes modificar, bloquear o
+        eliminar tu propio usuario.
       </div>
     </div>
   );
@@ -324,30 +402,54 @@ export default function Users() {
 // ============================================
 // 🎨 TARJETA DE USUARIO - OPCIÓN 2 (GRADIENTE EN CABECERA)
 // ============================================
-function UserCard({ user, isSelf, isLastAdmin, onEdit, onToggle, onDelete, onPasswordChange }) {
+function UserCard({
+  user,
+  isSelf,
+  isLastGerencia,
+  onEdit,
+  onToggle,
+  onDelete,
+  onPasswordChange,
+}) {
   const [expanded, setExpanded] = useState(false);
 
   const getRoleColor = (role) => {
-    if (role === "admin") return "gradient-admin";
+    if (role === "gerencia") return "gradient-gerencia";
     if (role === "planta") return "gradient-planta";
+    if (role === "produccion") return "gradient-produccion";
     return "gradient-vendedor";
   };
 
   const getRoleLabel = (role) => {
-    if (role === "admin") return "Admin";
+    if (role === "gerencia") return "Gerencia";
     if (role === "planta") return "Planta";
+    if (role === "produccion") return "Producción";
     return "Vendedor";
   };
 
-  const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const initials = user.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  // 🎯 isLastGerencia aplica SOLO si el usuario de la tarjeta es gerencia
+  const protectThisUser = isLastGerencia && user.role === "gerencia";
 
   return (
-    <div className={`user-card-gradient ${!user.active ? "inactive" : ""} ${isSelf ? "self" : ""}`}>
+    <div
+      className={`user-card-gradient ${!user.active ? "inactive" : ""} ${isSelf ? "self" : ""}`}
+    >
       {/* Cabecera con gradiente según rol */}
       <div className={`user-card-header ${getRoleColor(user.role)}`}>
         <div className="user-header-left">
           {user.photo ? (
-            <img src={user.photo} alt={user.name} className="user-header-image" />
+            <img
+              src={user.photo}
+              alt={user.name}
+              className="user-header-image"
+            />
           ) : (
             <div className="user-header-initials">{initials}</div>
           )}
@@ -375,8 +477,14 @@ function UserCard({ user, isSelf, isLastAdmin, onEdit, onToggle, onDelete, onPas
           <span className={`user-role-badge ${user.role}`}>
             {getRoleLabel(user.role)}
           </span>
-          {!user.active && <span className="user-status-badge inactive-badge">Bloqueado</span>}
-          {isLastAdmin && user.role === "admin" && <span className="user-status-badge warning-badge">Último admin</span>}
+          {!user.active && (
+            <span className="user-status-badge inactive-badge">Bloqueado</span>
+          )}
+          {protectThisUser && (
+            <span className="user-status-badge warning-badge">
+              Último gerente
+            </span>
+          )}
           {isSelf && <span className="user-status-badge self-badge">Tú</span>}
         </div>
 
@@ -384,16 +492,25 @@ function UserCard({ user, isSelf, isLastAdmin, onEdit, onToggle, onDelete, onPas
         {expanded && (
           <div className="user-expanded">
             <div className="user-expanded-row">
-              <span><strong>Nombre:</strong> {user.name}</span>
+              <span>
+                <strong>Nombre:</strong> {user.name}
+              </span>
             </div>
             <div className="user-expanded-row">
-              <span><strong>Usuario:</strong> @{user.username}</span>
+              <span>
+                <strong>Usuario:</strong> @{user.username}
+              </span>
             </div>
             <div className="user-expanded-row">
-              <span><strong>Rol:</strong> {getRoleLabel(user.role)}</span>
+              <span>
+                <strong>Rol:</strong> {getRoleLabel(user.role)}
+              </span>
             </div>
             <div className="user-expanded-row">
-              <span><strong>Estado:</strong> {user.active ? "Activo ✅" : "Bloqueado ❌"}</span>
+              <span>
+                <strong>Estado:</strong>{" "}
+                {user.active ? "Activo ✅" : "Bloqueado ❌"}
+              </span>
             </div>
             <div className="user-action-buttons">
               <button
@@ -415,12 +532,24 @@ function UserCard({ user, isSelf, isLastAdmin, onEdit, onToggle, onDelete, onPas
                 Contraseña
               </button>
               <button
-                className={!user.active ? "user-btn-activate" : "user-btn-block"}
+                className={
+                  !user.active ? "user-btn-activate" : "user-btn-block"
+                }
                 onClick={() => onToggle(user.id, user.active)}
-                disabled={isSelf || (isLastAdmin && user.role === "admin")}
-                title={isSelf ? "No puedes bloquearte a ti mismo" : ""}
+                disabled={isSelf || protectThisUser}
+                title={
+                  isSelf
+                    ? "No puedes bloquearte a ti mismo"
+                    : protectThisUser
+                      ? "No puedes bloquear al último gerente"
+                      : ""
+                }
               >
-                {!user.active ? <Icons.Check size={14} /> : <Icons.Lock size={14} />}
+                {!user.active ? (
+                  <Icons.Check size={14} />
+                ) : (
+                  <Icons.Lock size={14} />
+                )}
                 {!user.active ? "Activar" : "Bloquear"}
               </button>
               <button

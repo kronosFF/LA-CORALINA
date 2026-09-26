@@ -21,13 +21,13 @@
   color: var(--text-dark);
 }
 
-.users-page>h1 {
+.users-page > h1 {
   font-size: clamp(24px, 4vw, 32px);
   font-weight: 800;
   margin-bottom: 24px;
 }
 
-.users-page>h3 {
+.users-page > h3 {
   font-size: 18px;
   font-weight: 700;
   margin-top: 32px;
@@ -67,7 +67,7 @@
   border: 1px solid var(--border);
 }
 
-.form-card>h3 {
+.form-card > h3 {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 20px;
@@ -321,9 +321,9 @@
   color: #fff;
 }
 
-/* Gradientes por rol */
-.gradient-admin {
-  background: linear-gradient(90deg, #7c3aed 0%, #ec4899 100%);
+/* 🎭 Gradientes por rol */
+.gradient-gerencia {
+  background: linear-gradient(90deg, #dc2626 0%, #7c3aed 100%);
 }
 
 .gradient-planta {
@@ -332,6 +332,10 @@
 
 .gradient-vendedor {
   background: linear-gradient(90deg, #16a34a 0%, #22d3ee 100%);
+}
+
+.gradient-produccion {
+  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
 }
 
 .user-header-left {
@@ -444,9 +448,10 @@
   letter-spacing: 0.5px;
 }
 
-.user-role-badge.admin {
-  background: #fce7f3;
-  color: #be185d;
+/* 🎭 Badges por rol */
+.user-role-badge.gerencia {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .user-role-badge.planta {
@@ -457,6 +462,11 @@
 .user-role-badge.vendedor {
   background: #ccfbf1;
   color: #0f766e;
+}
+
+.user-role-badge.produccion {
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .user-status-badge {
