@@ -17,12 +17,7 @@ export default function Products() {
     deleteProduct,
   } = useContext(ProductContext);
 
-  // ✅ VALIDACIÓN DE ROLES: admin, planta o produccion
-  if (
-    user?.role !== "gerencia" &&
-    user?.role !== "planta" &&
-    user?.role !== "produccion"
-  ) {
+  if (user?.role !== "gerencia" && user?.role !== "planta") {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
         <p>No tienes acceso a esta sección</p>

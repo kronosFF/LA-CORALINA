@@ -1,15 +1,15 @@
 import React, { createContext, useState, useEffect } from "react";
-import { 
-  collection, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   doc,
   query,
   orderBy,
   where,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -22,10 +22,18 @@ export function ProductProvider({ children }) {
   const movementTypes = {
     ENTRADA_PRODUCCION: { label: "🏭 Entrada por producción", type: "entrada" },
     ENTRADA_COMPRA: { label: "📦 Entrada por compra", type: "entrada" },
-    ENTRADA_DEVOLUCION: { label: "🔄 Devolución (cancelación)", type: "entrada" },
+    ENTRADA_DEVOLUCION: {
+      label: "🔄 Devolución (cancelación)",
+      type: "entrada",
+    },
+    ENTRADA_DEVOLUCION_TABLERO: {
+      label: "↩️ Devolución de tablero",
+      type: "entrada",
+    },
     SALIDA_VENTA: { label: "💰 Salida por venta", type: "salida" },
     SALIDA_DETERIORO: { label: "⚠️ Salida por deterioro", type: "salida" },
     SALIDA_AJUSTE: { label: "🔧 Salida por ajuste", type: "salida" },
+    SALIDA_TABLERO: { label: "📋 Asignación a tablero", type: "salida" },
   };
 
   useEffect(() => {
@@ -35,7 +43,7 @@ export function ProductProvider({ children }) {
       querySnapshot.forEach((doc) => {
         productsList.push({ id: doc.id, ...doc.data() });
       });
-      
+
       if (productsList.length === 0) {
         const initialProducts = [
           { name: "Botellón 20L", price: 8000, stock: 50, image: null },
@@ -43,7 +51,7 @@ export function ProductProvider({ children }) {
           { name: "Botella 1L", price: 2000, stock: 100, image: null },
           { name: "Galón 5L", price: 4000, stock: 40, image: null },
         ];
-        
+
         const addInitialProducts = async () => {
           for (const product of initialProducts) {
             await addDoc(collection(db, "products"), product);
@@ -51,7 +59,7 @@ export function ProductProvider({ children }) {
         };
         addInitialProducts();
       }
-      
+
       setProducts(productsList);
       setLoading(false);
     });
@@ -133,7 +141,9 @@ export function ProductProvider({ children }) {
 
     try {
       const productRef = doc(db, "products", productId);
-      await updateDoc(productRef, { stock: (product.stock || 0) + Number(quantity) });
+      await updateDoc(productRef, {
+        stock: (product.stock || 0) + Number(quantity),
+      });
 
       await addDoc(collection(db, "stockMovements"), {
         productId,
@@ -155,10 +165,13 @@ export function ProductProvider({ children }) {
     }
   };
 
-  // ✅ FUNCIÓN CORREGIDA - Asegurar que se guarda SALIDA_DETERIORO
-  const reduceStock = async (productId, quantity, movementType, comment, user) => {
-    console.log("🔴 reduceStock llamado con movementType:", movementType);
-    
+  const reduceStock = async (
+    productId,
+    quantity,
+    movementType,
+    comment,
+    user,
+  ) => {
     const product = products.find((p) => p.id === productId);
     if (!product) {
       console.error("Producto no encontrado:", productId);
@@ -166,7 +179,9 @@ export function ProductProvider({ children }) {
     }
 
     if (product.stock < quantity) {
-      alert(`❌ Stock insuficiente para ${product.name}. Disponible: ${product.stock}`);
+      alert(
+        `❌ Stock insuficiente para ${product.name}. Disponible: ${product.stock}`,
+      );
       return false;
     }
 
@@ -174,10 +189,8 @@ export function ProductProvider({ children }) {
       const productRef = doc(db, "products", productId);
       await updateDoc(productRef, { stock: product.stock - Number(quantity) });
 
-      // Asegurar que el movementType sea el correcto
       const finalMovementType = movementType || "SALIDA_AJUSTE";
-      console.log("📝 Guardando movimiento con movementType:", finalMovementType);
-      
+
       await addDoc(collection(db, "stockMovements"), {
         productId,
         productName: product.name,
@@ -196,6 +209,72 @@ export function ProductProvider({ children }) {
       alert("❌ Error al quitar stock");
       return false;
     }
+  };
+
+  const reduceStockForBoard = async (items, seller, user, dailyLoadId) => {
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.productId);
+      if (!product) {
+        alert(`❌ Producto ${item.name} no encontrado`);
+        return false;
+      }
+      if (product.stock < item.assignedQty) {
+        alert(
+          `❌ Stock insuficiente para ${item.name}. Disponible: ${product.stock}, solicitado: ${item.assignedQty}`,
+        );
+        return false;
+      }
+    }
+
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.productId);
+      const productRef = doc(db, "products", item.productId);
+      await updateDoc(productRef, { stock: product.stock - item.assignedQty });
+
+      await addDoc(collection(db, "stockMovements"), {
+        productId: item.productId,
+        productName: item.name,
+        type: "salida",
+        movementType: "SALIDA_TABLERO",
+        quantity: item.assignedQty,
+        comment: `Asignado a tablero de ${seller.name}`,
+        userName: user?.name,
+        dailyLoadId: dailyLoadId,
+        tableroSellerId: seller.id,
+        tableroSellerName: seller.name,
+        date: new Date(),
+      });
+    }
+
+    return true;
+  };
+
+  const returnStockFromBoard = async (items, seller, user, dailyLoadId) => {
+    for (const item of items) {
+      if (!item.returnedQty || item.returnedQty <= 0) continue;
+
+      const product = products.find((p) => p.id === item.productId);
+      if (!product) continue;
+
+      const productRef = doc(db, "products", item.productId);
+      await updateDoc(productRef, { stock: product.stock + item.returnedQty });
+
+      await addDoc(collection(db, "stockMovements"), {
+        productId: item.productId,
+        productName: item.name,
+        type: "entrada",
+        movementType: "ENTRADA_DEVOLUCION_TABLERO",
+        quantity: item.returnedQty,
+        comment: `Devuelto por ${seller.name} desde tablero`,
+        userName: user?.name,
+        dailyLoadId: dailyLoadId,
+        tableroSellerId: seller.id,
+        tableroSellerName: seller.name,
+        date: new Date(),
+      });
+    }
+
+    return true;
   };
 
   const reduceStockForOrder = async (items, user) => {
@@ -248,29 +327,44 @@ export function ProductProvider({ children }) {
   const getStockMovements = async (filters = {}) => {
     try {
       let q;
-      
+
       if (filters.movementType) {
-        q = query(collection(db, "stockMovements"), where("movementType", "==", filters.movementType));
+        q = query(
+          collection(db, "stockMovements"),
+          where("movementType", "==", filters.movementType),
+        );
       } else if (filters.productId) {
-        q = query(collection(db, "stockMovements"), where("productId", "==", filters.productId));
+        q = query(
+          collection(db, "stockMovements"),
+          where("productId", "==", filters.productId),
+        );
+      } else if (filters.tableroSellerId) {
+        q = query(
+          collection(db, "stockMovements"),
+          where("tableroSellerId", "==", filters.tableroSellerId),
+        );
       } else {
         q = query(collection(db, "stockMovements"), orderBy("date", "desc"));
       }
-      
+
       const querySnapshot = await getDocs(q);
       const movements = [];
       querySnapshot.forEach((doc) => {
         movements.push({ id: doc.id, ...doc.data() });
       });
-      
-      if (filters.movementType || filters.productId) {
+
+      if (
+        filters.movementType ||
+        filters.productId ||
+        filters.tableroSellerId
+      ) {
         movements.sort((a, b) => {
           const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date);
           const dateB = b.date?.toDate ? b.date.toDate() : new Date(b.date);
           return dateB - dateA;
         });
       }
-      
+
       return movements;
     } catch (error) {
       console.error("Error al cargar movimientos:", error);
@@ -292,6 +386,8 @@ export function ProductProvider({ children }) {
         reduceStock,
         reduceStockForOrder,
         returnStockFromOrder,
+        reduceStockForBoard,
+        returnStockFromBoard,
         getStockMovements,
       }}
     >

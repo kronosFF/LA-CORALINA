@@ -1,0 +1,516 @@
+/* === VARIABLES === */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #16a34a;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+/* === PÁGINA === */
+.jornada-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.jornada-page > h1 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+/* === ALERTA === */
+.jornada-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.jornada-alert-info {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.jornada-alert-warning {
+  background: #fef3c7;
+  border: 1.5px solid #fcd34d;
+  color: #92400e;
+}
+
+.jornada-alert-success {
+  background: #dcfce7;
+  border: 1.5px solid #86efac;
+  color: #15803d;
+}
+
+.jornada-alert-danger {
+  background: #fee2e2;
+  border: 1.5px solid #fca5a5;
+  color: #b91c1c;
+}
+
+/* === CARDS DE RESUMEN === */
+.jornada-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.jornada-summary-card {
+  padding: 20px 24px;
+  border-radius: 14px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 110px;
+  justify-content: center;
+}
+
+.jornada-summary-card .js-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.jornada-summary-card .js-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.jornada-summary-card .js-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.gradient-blue {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+.gradient-green {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+.gradient-purple {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+.gradient-orange {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.gradient-pink {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+/* === SECCIONES === */
+.jornada-section {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.jornada-section > h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* === TABLA DE PRODUCTOS === */
+.jornada-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.jornada-table th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-medium);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.jornada-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-dark);
+}
+
+.jornada-table tr:last-child td {
+  border-bottom: none;
+}
+
+.jornada-ok {
+  color: var(--success);
+  font-weight: 700;
+}
+.jornada-warn {
+  color: var(--warning);
+  font-weight: 700;
+}
+.jornada-danger {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* === DINERO === */
+.jornada-money-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jornada-money-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-page);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.jornada-money-row strong {
+  color: var(--text-dark);
+}
+
+.jornada-money-total {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.jornada-money-total strong {
+  font-size: 22px;
+  color: #fff;
+}
+
+/* === WIZARD PASOS === */
+.wizard-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--bg-page);
+  padding: 6px;
+  border-radius: 14px;
+}
+
+.wizard-step {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.wizard-step.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.wizard-step.done {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* === INPUTS === */
+.jornada-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  background: var(--bg-page);
+  box-sizing: border-box;
+}
+
+.jornada-input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.jornada-input-big {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  padding: 16px;
+}
+
+textarea.jornada-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* === BOTONES === */
+.jornada-btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.jornada-btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.jornada-btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.jornada-btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.jornada-btn-success:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.jornada-btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.jornada-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.jornada-btn-secondary {
+  background: var(--border);
+  color: var(--text-medium);
+}
+
+.jornada-btn-secondary:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+
+.jornada-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.jornada-btn-big {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+}
+
+/* === DIFERENCIA (SOBRANTE/FALTANTE) === */
+.jornada-difference {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.jornada-difference.positive {
+  background: #dcfce7;
+  border: 1.5px solid #86efac;
+  color: #15803d;
+}
+
+.jornada-difference.negative {
+  background: #fee2e2;
+  border: 1.5px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.jornada-difference.zero {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.jornada-difference-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.jornada-difference-content {
+  flex: 1;
+}
+
+.jornada-difference-content strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.jornada-difference-content p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* === LISTA DE CUADRES === */
+.jornada-closing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.jornada-closing-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.jornada-closing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jornada-closing-header strong {
+  font-size: 15px;
+}
+
+.jornada-closing-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.jornada-closing-body {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-medium);
+}
+
+.jornada-closing-body span strong {
+  color: var(--text-dark);
+}
+
+/* === ESTADO VACÍO === */
+.jornada-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-page);
+  border-radius: 14px;
+  border: 1px dashed var(--border);
+}
+
+.jornada-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.jornada-empty strong {
+  display: block;
+  font-size: 16px;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.jornada-empty p {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 640px) {
+  .jornada-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jornada-summary-card .js-value {
+    font-size: 24px;
+  }
+
+  .wizard-steps {
+    flex-direction: column;
+  }
+
+  .jornada-closing-body {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .jornada-money-total {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}

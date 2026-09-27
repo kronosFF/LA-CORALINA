@@ -8,11 +8,13 @@ import EmptyState from "../../components/EmptyState/EmptyState";
 import "./Orders.css";
 
 export default function Orders() {
-  const { orders } = useContext(OrderContext);
-  const { user, notifications, markNotificationAsRead } = useContext(AuthContext);
+  const { orders, hasMoreOrders, loadingMore, loadMoreOrders } =
+    useContext(OrderContext);
+  const { user, notifications, markNotificationAsRead } =
+    useContext(AuthContext);
   const { addToast } = useToast();
 
-  // Estados de paginación
+  // Estados de paginación visual
   const [visibleCount, setVisibleCount] = useState(10);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -20,47 +22,62 @@ export default function Orders() {
   const [filter, setFilter] = useState("todos");
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Aplicar filtros base
-  let visible = user?.role === "vendedor" ? orders.filter((o) => o.sellerId === user.id) : orders;
+  // ==========================================
+  // FILTRADO
+  // ==========================================
+  let visible =
+    user?.role === "vendedor"
+      ? orders.filter((o) => o.sellerId === user.id)
+      : orders;
 
-  // Filtro por RANGO de fechas
   if (startDate && endDate) {
     visible = visible.filter((o) => {
       if (!o.createdAt) return false;
       try {
-        let orderDate = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+        let orderDate = o.createdAt?.toDate
+          ? o.createdAt.toDate()
+          : new Date(o.createdAt);
         if (isNaN(orderDate.getTime())) return false;
 
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
-
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
         return orderDate >= start && orderDate <= end;
-      } catch (error) { return false; }
+      } catch {
+        return false;
+      }
     });
   } else if (startDate) {
     visible = visible.filter((o) => {
       if (!o.createdAt) return false;
       try {
-        let orderDate = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+        let orderDate = o.createdAt?.toDate
+          ? o.createdAt.toDate()
+          : new Date(o.createdAt);
         if (isNaN(orderDate.getTime())) return false;
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
         return orderDate >= start;
-      } catch (error) { return false; }
+      } catch {
+        return false;
+      }
     });
   } else if (endDate) {
     visible = visible.filter((o) => {
       if (!o.createdAt) return false;
       try {
-        let orderDate = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+        let orderDate = o.createdAt?.toDate
+          ? o.createdAt.toDate()
+          : new Date(o.createdAt);
         if (isNaN(orderDate.getTime())) return false;
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
         return orderDate <= end;
-      } catch (error) { return false; }
+      } catch {
+        return false;
+      }
     });
   }
 
@@ -68,30 +85,56 @@ export default function Orders() {
     visible = visible.filter((o) => {
       if (!o.createdAt) return false;
       try {
-        let orderDate = o.createdAt?.toDate ? o.createdAt.toDate() : new Date(o.createdAt);
+        let orderDate = o.createdAt?.toDate
+          ? o.createdAt.toDate()
+          : new Date(o.createdAt);
         if (isNaN(orderDate.getTime())) return false;
         const h = orderDate.getHours().toString().padStart(2, "0");
         return h === hour;
-      } catch (error) { return false; }
+      } catch {
+        return false;
+      }
     });
   }
 
-  // Filtrar por estado
   const filtered = visible.filter((o) => {
     if (filter === "todos") return true;
     return o.status === filter;
   });
 
-  // Paginación
+  // Paginación visual
   const displayedOrders = filtered.slice(0, visibleCount);
-  const hasMore = filtered.length > visibleCount;
+  const hasMoreToShow = filtered.length > visibleCount;
 
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 10);
-    addToast(`Mostrando ${Math.min(visibleCount + 10, filtered.length)} de ${filtered.length} pedidos`, "success");
+  // 🆕 El botón "Ver más" tiene 2 comportamientos:
+  // 1. Si hay más cargados en memoria pero no visibles → solo expande la vista
+  // 2. Si ya se muestran todos los cargados pero hay más en Firestore → carga más de Firestore
+  const canLoadMoreFromFirestore =
+    hasMoreOrders && filter === "todos" && !startDate && !endDate && !hour;
+
+  const handleShowMore = async () => {
+    // Si aún hay ocultos en memoria → mostrar
+    if (hasMoreToShow) {
+      setVisibleCount((prev) => prev + 10);
+      addToast(
+        `Mostrando ${Math.min(visibleCount + 10, filtered.length)} de ${filtered.length} pedidos`,
+        "success",
+      );
+      return;
+    }
+
+    // Si ya mostramos todo lo cargado y hay más en Firestore → cargar más
+    if (canLoadMoreFromFirestore) {
+      const ok = await loadMoreOrders();
+      if (ok) {
+        setVisibleCount((prev) => prev + 10);
+        addToast("Cargando más pedidos...", "success");
+      } else {
+        addToast("No hay más pedidos", "info");
+      }
+    }
   };
 
-  // Reiniciar paginación al cambiar filtros
   useEffect(() => {
     setVisibleCount(10);
   }, [filter, startDate, endDate, hour]);
@@ -104,7 +147,7 @@ export default function Orders() {
     { key: "cancelado", label: "Cancelados" },
   ];
 
-  const unreadCount = notifications?.filter(n => !n.read).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.read).length || 0;
 
   const handleNotificationClick = async (notifId) => {
     if (user?.id) await markNotificationAsRead(user.id, notifId);
@@ -119,7 +162,7 @@ export default function Orders() {
       credito_empresa: "Crédito empresa",
       credito_vendedor: "Crédito vendedor",
       cuenta_empresa: "Cuenta empresa",
-      otros: "Otros"
+      otros: "Otros",
     };
     return methods[method] || method;
   };
@@ -131,7 +174,6 @@ export default function Orders() {
     setVisibleCount(10);
   };
 
-  // Iconos para cada tab
   const tabIcons = {
     todos: <Icons.Orders size={16} />,
     preparacion: <Icons.Clock size={16} />,
@@ -146,26 +188,38 @@ export default function Orders() {
         <h1>Pedidos</h1>
         {user?.role === "vendedor" && (
           <div className="orders-notif-container">
-            <button className="orders-notif-btn" onClick={() => setShowNotifications(!showNotifications)}>
+            <button
+              className="orders-notif-btn"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
               <Icons.Bell size={22} />
-              {unreadCount > 0 && <span className="orders-notif-badge">{unreadCount}</span>}
+              {unreadCount > 0 && (
+                <span className="orders-notif-badge">{unreadCount}</span>
+              )}
             </button>
             {showNotifications && (
               <div className="orders-notif-dropdown">
                 <h4>Notificaciones</h4>
                 {notifications?.length === 0 ? (
-                  <EmptyState icon={<Icons.Info size={32} />} title="Sin notificaciones" description="Estás al día." />
+                  <EmptyState
+                    icon={<Icons.Info size={32} />}
+                    title="Sin notificaciones"
+                    description="Estás al día."
+                  />
                 ) : (
-                  notifications.map(notif => (
+                  notifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className={`orders-notif-item ${!notif.read ? "unread" : ""}`}
+                      className={`orders-notif-item ${
+                        !notif.read ? "unread" : ""
+                      }`}
                       onClick={() => handleNotificationClick(notif.id)}
                     >
                       <strong>{notif.title}</strong>
                       <p>{notif.message}</p>
                       <span className="orders-notif-date">
-                        {notif.createdAt?.toDate?.().toLocaleString() || new Date(notif.createdAt).toLocaleString()}
+                        {notif.createdAt?.toDate?.().toLocaleString() ||
+                          new Date(notif.createdAt).toLocaleString()}
                       </span>
                     </div>
                   ))
@@ -197,11 +251,19 @@ export default function Orders() {
         </div>
         <div className="filter-group">
           <label>Hora pico</label>
-          <select value={hour} onChange={(e) => setHour(e.target.value)} className="orders-date-input">
+          <select
+            value={hour}
+            onChange={(e) => setHour(e.target.value)}
+            className="orders-date-input"
+          >
             <option value="">Todas</option>
             {[...Array(24)].map((_, i) => {
               const h = i.toString().padStart(2, "0");
-              return <option key={h} value={h}>{h}:00</option>;
+              return (
+                <option key={h} value={h}>
+                  {h}:00
+                </option>
+              );
             })}
           </select>
         </div>
@@ -210,16 +272,15 @@ export default function Orders() {
         </button>
       </div>
 
-      {/* Contador de pedidos */}
       <div className="orders-counter">
         <span>
-          Mostrando <strong>{displayedOrders.length}</strong> de <strong>{filtered.length}</strong> pedidos
-          {filter !== "todos" && ` (${tabs.find(t => t.key === filter)?.label})`}
+          Mostrando <strong>{displayedOrders.length}</strong> de{" "}
+          <strong>{filtered.length}</strong> pedidos cargados
+          {filter !== "todos" &&
+            ` (${tabs.find((t) => t.key === filter)?.label})`}
         </span>
-        {filtered.length > 0 && (
-          <span className="orders-page-badge">
-            Página {Math.ceil(displayedOrders.length / 10)}
-          </span>
+        {hasMoreOrders && (
+          <span className="orders-page-badge">📦 Hay más en la nube</span>
         )}
       </div>
 
@@ -240,7 +301,11 @@ export default function Orders() {
         <EmptyState
           icon={<Icons.Orders size={32} />}
           title="Sin pedidos"
-          description={startDate || endDate || hour ? "No hay pedidos para los filtros seleccionados." : "No hay pedidos en este estado actualmente."}
+          description={
+            startDate || endDate || hour
+              ? "No hay pedidos para los filtros seleccionados."
+              : "No hay pedidos en este estado actualmente."
+          }
         />
       )}
 
@@ -250,26 +315,52 @@ export default function Orders() {
           {order.paymentMethod && (
             <div className="payment-info">
               <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
-              {order.paymentStatus === "pagado" && <span className="paid-badge">Pagado</span>}
-              {order.paymentStatus === "pendiente" && <span className="pending-badge">Pendiente</span>}
-              {order.creditType && <span> • {order.creditType === "empresa" ? "Crédito empresa" : "Crédito vendedor"}</span>}
+              {order.paymentStatus === "pagado" && (
+                <span className="paid-badge">Pagado</span>
+              )}
+              {order.paymentStatus === "pendiente" && (
+                <span className="pending-badge">Pendiente</span>
+              )}
+              {order.creditType && (
+                <span>
+                  {" "}
+                  •{" "}
+                  {order.creditType === "empresa"
+                    ? "Crédito empresa"
+                    : "Crédito vendedor"}
+                </span>
+              )}
             </div>
           )}
         </div>
       ))}
 
-      {/* Botón "Ver más" */}
-      {hasMore && (
+      {/* 🆕 BOTÓN ÚNICO: maneja tanto la expansión local como la carga desde Firestore */}
+      {(hasMoreToShow || canLoadMoreFromFirestore) && (
         <div className="orders-load-more">
-          <button onClick={loadMore} className="orders-load-more-btn">
-            <Icons.Plus size={18} />
-            Ver más ({filtered.length - displayedOrders.length} restantes)
+          <button
+            onClick={handleShowMore}
+            className="orders-load-more-btn"
+            disabled={loadingMore}
+          >
+            {loadingMore ? (
+              <>
+                <Icons.Clock size={18} />
+                Cargando...
+              </>
+            ) : (
+              <>
+                <Icons.Plus size={18} />
+                {hasMoreToShow
+                  ? `Ver más (${filtered.length - displayedOrders.length} restantes)`
+                  : "Cargar más pedidos antiguos"}
+              </>
+            )}
           </button>
         </div>
       )}
 
-      {/* Mensaje final */}
-      {filtered.length > 0 && !hasMore && (
+      {!hasMoreToShow && !canLoadMoreFromFirestore && filtered.length > 0 && (
         <div className="orders-all-loaded">
           <Icons.Check size={18} />
           Todos los pedidos cargados ({filtered.length} en total)

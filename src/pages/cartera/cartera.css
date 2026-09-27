@@ -1,0 +1,658 @@
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #16a34a;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --bg-card: #ffffff;
+  --bg-page: #f8fafc;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+.cartera-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.cartera-page > h1 {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+/* === RESUMEN SUPERIOR === */
+.cartera-summary {
+  background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+  padding: 28px;
+  border-radius: var(--radius);
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.cartera-summary h3 {
+  font-size: 16px;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.cartera-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.cartera-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cartera-stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.cartera-stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.cartera-stat-value.danger {
+  color: #fca5a5;
+}
+
+/* === FILTROS === */
+.cartera-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.cartera-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cartera-filter-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cartera-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-page);
+  font-size: 14px;
+  font-family: inherit;
+  min-width: 150px;
+  outline: none;
+}
+
+.cartera-input:focus {
+  border-color: var(--primary);
+  background: #fff;
+}
+
+.cartera-clear-btn {
+  padding: 10px 20px;
+  background: var(--bg-page);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-medium);
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.cartera-clear-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-dark);
+}
+
+/* === TABS === */
+.cartera-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  background: var(--bg-page);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.cartera-tab {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  background: transparent;
+  color: var(--text-medium);
+  font-family: inherit;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 100px;
+}
+
+.cartera-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.cartera-tab:hover:not(.active) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.cartera-tab-count {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 1px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.cartera-tab:not(.active) .cartera-tab-count {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* === LISTA DE CLIENTES === */
+.cartera-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cartera-client-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cartera-client-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.cartera-client-card.overdue {
+  border-left: 5px solid var(--danger);
+  background: #fff7f7;
+}
+
+.cartera-client-left {
+  flex: 1;
+  min-width: 200px;
+}
+
+.cartera-client-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cartera-client-sellers {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.cartera-client-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cartera-client-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+}
+
+.cartera-client-stat-label {
+  font-size: 10px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cartera-client-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.cartera-client-balance {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--danger);
+}
+
+/* === BADGES === */
+.cartera-badge {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-overdue {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge-normal {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* === DETALLE DE CLIENTE === */
+.cartera-detail-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  color: var(--text-dark);
+}
+
+.cartera-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cartera-detail-header h1 {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.cartera-detail-meta {
+  font-size: 13px;
+  color: var(--text-medium);
+}
+
+.cartera-back-btn {
+  padding: 8px 16px;
+  background: var(--bg-page);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-medium);
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.cartera-back-btn:hover {
+  background: #e2e8f0;
+  color: var(--text-dark);
+}
+
+/* === SECCIONES === */
+.cartera-section {
+  background: var(--bg-card);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+
+.cartera-section > h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === RESUMEN DEL CLIENTE === */
+.cartera-client-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.cartera-client-summary-item {
+  background: var(--bg-page);
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.cartera-client-summary-label {
+  font-size: 11px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.cartera-client-summary-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.cartera-client-summary-value.danger {
+  color: var(--danger);
+}
+.cartera-client-summary-value.success {
+  color: var(--success);
+}
+
+/* === LISTA DE PEDIDOS A CRÉDITO === */
+.cartera-receivables-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cartera-receivable-card {
+  padding: 14px 18px;
+  background: var(--bg-page);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--warning);
+}
+
+.cartera-receivable-card.overdue {
+  border-left-color: var(--danger);
+  background: #fff7f7;
+}
+
+.cartera-receivable-card.paid {
+  border-left-color: var(--success);
+  background: #f0fdf4;
+}
+
+.cartera-receivable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cartera-receivable-order {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+.cartera-receivable-amounts {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-medium);
+  margin-bottom: 6px;
+}
+
+.cartera-receivable-amounts strong {
+  color: var(--text-dark);
+}
+
+.cartera-receivable-balance {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--danger);
+}
+
+.cartera-receivable-balance.paid {
+  color: var(--success);
+}
+
+/* === HISTORIAL DE PAGOS === */
+.cartera-payment-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+}
+
+.cartera-payment-row:last-child {
+  border-bottom: none;
+}
+
+.cartera-payment-amount {
+  font-weight: 700;
+  color: var(--success);
+}
+
+/* === BOTONES === */
+.cartera-btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cartera-btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.cartera-btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.cartera-btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.cartera-btn-success:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.cartera-btn-secondary {
+  background: var(--border);
+  color: var(--text-medium);
+}
+
+.cartera-btn-secondary:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+
+.cartera-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cartera-btn-big {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+}
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-medium);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-field input,
+.modal-field textarea,
+.modal-field select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  background: var(--bg-page);
+  box-sizing: border-box;
+}
+
+.modal-field input:focus,
+.modal-field textarea:focus,
+.modal-field select:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.modal-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 640px) {
+  .cartera-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cartera-stat-value {
+    font-size: 20px;
+  }
+
+  .cartera-client-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cartera-client-right {
+    justify-content: space-between;
+  }
+
+  .cartera-client-stat {
+    text-align: left;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+}

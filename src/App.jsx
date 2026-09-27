@@ -11,9 +11,17 @@ import Products from "./pages/products/Products";
 import Clients from "./pages/clients/Clients";
 import Stock from "./pages/stock/Stock";
 import Expenses from "./pages/expenses/Expenses";
+import Board from "./pages/board/Board";
+import MyJourney from "./pages/jornada/MyJourney";
+import CloseJourney from "./pages/jornada/CloseJourney";
+import MyClosings from "./pages/jornada/MyClosings";
+import Closings from "./pages/cuadres/Closings";
+import ClosingDetail from "./pages/cuadres/ClosingDetail";
+import Cartera from "./pages/cartera/Cartera";
+import ClientAccount from "./pages/cartera/ClientAccount";
+import MyCredits from "./pages/cartera/MyCredits";
 import Layout from "./components/Layout/Layout";
 
-// 🛡️ Guard de rutas por rol
 function ProtectedRoute({ allowedRoles, children }) {
   const { user } = useContext(AuthContext);
   if (!user) return <Navigate to="/" replace />;
@@ -26,12 +34,17 @@ function ProtectedRoute({ allowedRoles, children }) {
 export default function App() {
   const { user } = useContext(AuthContext);
 
-  // 🎭 Grupos de roles por módulo
-  const USUARIOS = ["gerencia"]; // Solo gerencia ve usuarios
-  const PEDIDOS = ["gerencia", "planta", "vendedor"]; // No produccion
-  const GASTOS = ["gerencia", "planta", "vendedor"]; // No produccion
-  const INVENTARIO = ["gerencia", "planta", "produccion"]; // Productos y Stock
-  const CLIENTES = ["gerencia", "planta"]; // No produccion, no vendedor
+  const USUARIOS = ["gerencia"];
+  const PEDIDOS = ["gerencia", "planta", "vendedor"];
+  const GASTOS = ["gerencia", "planta", "vendedor"];
+  const PRODUCTOS = ["gerencia", "planta"];
+  const STOCK = ["gerencia", "planta", "produccion"];
+  const CLIENTES = ["gerencia", "planta"];
+  const TABLERO = ["gerencia", "planta", "vendedor"];
+  const MI_JORNADA = ["vendedor"];
+  const CUADRES = ["gerencia", "planta"];
+  const CARTERA = ["gerencia", "planta"];
+  const MI_CREDITOS = ["vendedor"];
 
   return (
     <ToastProvider>
@@ -41,10 +54,89 @@ export default function App() {
         ) : (
           <Layout>
             <Routes>
-              {/* Todos pueden ver Dashboard */}
               <Route path="/" element={<Dashboard />} />
 
-              {/* Pedidos y Crear Pedido */}
+              {/* Tablero */}
+              <Route
+                path="/tablero"
+                element={
+                  <ProtectedRoute allowedRoles={TABLERO}>
+                    <Board />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Cartera */}
+              <Route
+                path="/cartera"
+                element={
+                  <ProtectedRoute allowedRoles={CARTERA}>
+                    <Cartera />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cartera/cliente/:id"
+                element={
+                  <ProtectedRoute allowedRoles={CARTERA}>
+                    <ClientAccount />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mis-creditos"
+                element={
+                  <ProtectedRoute allowedRoles={MI_CREDITOS}>
+                    <MyCredits />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Jornada */}
+              <Route
+                path="/mi-jornada"
+                element={
+                  <ProtectedRoute allowedRoles={MI_JORNADA}>
+                    <MyJourney />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cerrar-jornada"
+                element={
+                  <ProtectedRoute allowedRoles={MI_JORNADA}>
+                    <CloseJourney />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mis-cuadres"
+                element={
+                  <ProtectedRoute allowedRoles={MI_JORNADA}>
+                    <MyClosings />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Cuadres */}
+              <Route
+                path="/cuadres"
+                element={
+                  <ProtectedRoute allowedRoles={CUADRES}>
+                    <Closings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cuadres/:id"
+                element={
+                  <ProtectedRoute allowedRoles={CUADRES}>
+                    <ClosingDetail />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Resto */}
               <Route
                 path="/pedidos"
                 element={
@@ -61,28 +153,22 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-
-              {/* Productos */}
               <Route
                 path="/productos"
                 element={
-                  <ProtectedRoute allowedRoles={INVENTARIO}>
+                  <ProtectedRoute allowedRoles={PRODUCTOS}>
                     <Products />
                   </ProtectedRoute>
                 }
               />
-
-              {/* Stock */}
               <Route
                 path="/stock"
                 element={
-                  <ProtectedRoute allowedRoles={INVENTARIO}>
+                  <ProtectedRoute allowedRoles={STOCK}>
                     <Stock />
                   </ProtectedRoute>
                 }
               />
-
-              {/* Clientes */}
               <Route
                 path="/clientes"
                 element={
@@ -91,8 +177,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-
-              {/* Usuarios: SOLO gerencia */}
               <Route
                 path="/usuarios"
                 element={
@@ -101,8 +185,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-
-              {/* Gastos */}
               <Route
                 path="/gastos"
                 element={
@@ -112,7 +194,6 @@ export default function App() {
                 }
               />
 
-              {/* Cualquier otra ruta → Dashboard */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>

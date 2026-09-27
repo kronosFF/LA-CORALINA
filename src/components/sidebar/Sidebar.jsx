@@ -20,23 +20,27 @@ export default function Sidebar({ closeSidebar }) {
     if (closeSidebar) closeSidebar();
   };
 
-  // 🎭 Flags de rol
   const isGerencia = user?.role === "gerencia";
   const isPlanta = user?.role === "planta";
   const isVendedor = user?.role === "vendedor";
   const isProduccion = user?.role === "produccion";
 
-  // Agrupadores
+  const canSeeTablero = isGerencia || isPlanta || isVendedor;
   const canSeePedidos = isGerencia || isPlanta || isVendedor;
   const canSeeGastos = isGerencia || isPlanta || isVendedor;
-  const canSeeInventario = isGerencia || isPlanta || isProduccion; // Productos y Stock
+  const canSeeProductos = isGerencia || isPlanta;
+  const canSeeStock = isGerencia || isPlanta || isProduccion;
   const canSeeClientes = isGerencia || isPlanta;
-  const canSeeUsuarios = isGerencia; // SOLO gerencia
+  const canSeeUsuarios = isGerencia;
+
+  const canSeeMiJornada = isVendedor;
+  const canSeeCuadres = isGerencia || isPlanta;
+  const canSeeCartera = isGerencia || isPlanta;
+  const canSeeMisCreditos = isVendedor;
 
   return (
     <div className="sidebar">
       <div className="sidebar-inner">
-        {/* LOGO */}
         <div className="sidebar-logo-container">
           <img src={logo} alt="La Coralina" className="sidebar-logo-image" />
           <h2 className="sidebar-logo-text">Coralina</h2>
@@ -45,15 +49,19 @@ export default function Sidebar({ closeSidebar }) {
           </p>
         </div>
 
-        {/* NAVEGACIÓN */}
         <nav className="sidebar-nav">
-          {/* Dashboard: todos */}
           <button className="sidebar-nav-btn" onClick={() => go("/")}>
             <Icons.Dashboard />
             Dashboard
           </button>
 
-          {/* Pedidos y Crear Pedido */}
+          {canSeeTablero && (
+            <button className="sidebar-nav-btn" onClick={() => go("/tablero")}>
+              <Icons.Package />
+              Tablero
+            </button>
+          )}
+
           {canSeePedidos && (
             <>
               <button
@@ -63,7 +71,6 @@ export default function Sidebar({ closeSidebar }) {
                 <Icons.Orders />
                 Pedidos
               </button>
-
               <button className="sidebar-nav-btn" onClick={() => go("/crear")}>
                 <Icons.CreateOrder />
                 Crear Pedido
@@ -71,7 +78,6 @@ export default function Sidebar({ closeSidebar }) {
             </>
           )}
 
-          {/* Gastos */}
           {canSeeGastos && (
             <button className="sidebar-nav-btn" onClick={() => go("/gastos")}>
               <Icons.Expenses />
@@ -79,8 +85,7 @@ export default function Sidebar({ closeSidebar }) {
             </button>
           )}
 
-          {/* Productos */}
-          {canSeeInventario && (
+          {canSeeProductos && (
             <button
               className="sidebar-nav-btn"
               onClick={() => go("/productos")}
@@ -90,7 +95,6 @@ export default function Sidebar({ closeSidebar }) {
             </button>
           )}
 
-          {/* Clientes */}
           {canSeeClientes && (
             <button className="sidebar-nav-btn" onClick={() => go("/clientes")}>
               <Icons.Clients />
@@ -98,24 +102,65 @@ export default function Sidebar({ closeSidebar }) {
             </button>
           )}
 
-          {/* Stock */}
-          {canSeeInventario && (
+          {canSeeStock && (
             <button className="sidebar-nav-btn" onClick={() => go("/stock")}>
               <Icons.Stock />
               Stock
             </button>
           )}
 
-          {/* Usuarios: SOLO gerencia */}
           {canSeeUsuarios && (
             <button className="sidebar-nav-btn" onClick={() => go("/usuarios")}>
               <Icons.Users />
               Usuarios
             </button>
           )}
+
+          {canSeeMiJornada && (
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => go("/mi-jornada")}
+            >
+              <Icons.Money />
+              Mi Jornada
+            </button>
+          )}
+
+          {canSeeMisCreditos && (
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => go("/mis-creditos")}
+            >
+              <Icons.Money />
+              Mis Créditos
+            </button>
+          )}
+
+          {canSeeMiJornada && (
+            <button
+              className="sidebar-nav-btn"
+              onClick={() => go("/mis-cuadres")}
+            >
+              <Icons.Clock />
+              Mis Cuadres
+            </button>
+          )}
+
+          {canSeeCuadres && (
+            <button className="sidebar-nav-btn" onClick={() => go("/cuadres")}>
+              <Icons.Money />
+              Cuadres
+            </button>
+          )}
+
+          {canSeeCartera && (
+            <button className="sidebar-nav-btn" onClick={() => go("/cartera")}>
+              <Icons.Money />
+              Cartera
+            </button>
+          )}
         </nav>
 
-        {/* LOGOUT */}
         <div className="sidebar-logout-container">
           <button onClick={handleLogout} className="sidebar-logout-btn">
             <Icons.Logout />

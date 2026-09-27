@@ -10,17 +10,66 @@ import {
   onSnapshot,
   getDocs,
   where,
-  limit
+  limit,
+  startAfter,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export const OrderContext = createContext();
 
+const INITIAL_ORDERS_LIMIT = 30;
+const MORE_ORDERS_PAGE_SIZE = 10;
+
+// Helper: crear cuenta por cobrar desde un pedido a crédito
+const createReceivableFromOrder = async (order) => {
+  const balance = (order.total || 0) - (order.totalPaid || 0);
+  if (balance <= 0) return;
+
+  const now = new Date();
+  const dueDate = new Date(now);
+  dueDate.setDate(dueDate.getDate() + 30);
+
+  const toKey = (d) => {
+    const dd = d instanceof Date ? d : new Date(d);
+    return `${dd.getFullYear()}-${String(dd.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(dd.getDate()).padStart(2, "0")}`;
+  };
+
+  await addDoc(collection(db, "receivables"), {
+    clientId: order.clientId || order.clientData?.id || null,
+    clientName: order.clientData?.name || order.client || "—",
+    clientPhone: order.clientData?.phone || "",
+    sellerId: order.sellerId || null,
+    sellerName: order.sellerName || "—",
+    origin: order.creditType === "empresa" ? "gerencia" : "vendedor",
+    orderId: order.id || null,
+    orderNumericId: order.numericId || null,
+    orderDate: toKey(order.createdAt || now),
+    totalOriginal: order.total || 0,
+    totalPaid: order.totalPaid || 0,
+    balance: balance,
+    status: "pendiente",
+    dueDate: dueDate,
+    dueDateKey: toKey(dueDate),
+    paymentHistory: [],
+    createdAt: now,
+    updatedAt: now,
+  });
+};
+
 const getNextNumericId = async () => {
-  const q = query(collection(db, "orders"), orderBy("numericId", "desc"));
+  const q = query(
+    collection(db, "orders"),
+    orderBy("numericId", "desc"),
+    limit(1),
+  );
   const snap = await getDocs(q);
   let max = 0;
-  snap.forEach(d => { if (d.data().numericId > max) max = d.data().numericId; });
+  snap.forEach((d) => {
+    if (d.data().numericId > max) max = d.data().numericId;
+  });
   return max + 1;
 };
 
@@ -28,65 +77,155 @@ export function OrderProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [payments, setPayments] = useState([]);
+
+  const [hasMoreOrders, setHasMoreOrders] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const lastDocRef = useRef(null);
+
   const locks = useRef(new Set());
 
-  // Suscripción a pedidos
+  // ==========================================
+  // SUSCRIPCIÓN: últimos 30 pedidos
+  // ==========================================
   useEffect(() => {
-    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-    const unsub = onSnapshot(q, snap => {
+    const q = query(
+      collection(db, "orders"),
+      orderBy("createdAt", "desc"),
+      limit(INITIAL_ORDERS_LIMIT),
+    );
+
+    const unsub = onSnapshot(q, (snap) => {
       const list = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+      snap.forEach((d) => list.push({ id: d.id, ...d.data() }));
       setOrders(list);
+      lastDocRef.current = snap.docs[snap.docs.length - 1] || null;
+      setHasMoreOrders(snap.docs.length === INITIAL_ORDERS_LIMIT);
     });
+
     return () => unsub();
   }, []);
 
-  // Suscripción a gastos
+  // ==========================================
+  // CARGAR MÁS PEDIDOS
+  // ==========================================
+  const loadMoreOrders = async () => {
+    if (loadingMore || !lastDocRef.current || !hasMoreOrders) return false;
+
+    setLoadingMore(true);
+    try {
+      const q = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc"),
+        startAfter(lastDocRef.current),
+        limit(MORE_ORDERS_PAGE_SIZE),
+      );
+
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        setHasMoreOrders(false);
+        setLoadingMore(false);
+        return false;
+      }
+
+      const newOrders = [];
+      snap.forEach((d) => newOrders.push({ id: d.id, ...d.data() }));
+
+      setOrders((prev) => {
+        const existingIds = new Set(prev.map((o) => o.id));
+        const filtered = newOrders.filter((o) => !existingIds.has(o.id));
+        return [...prev, ...filtered];
+      });
+
+      lastDocRef.current = snap.docs[snap.docs.length - 1];
+
+      if (snap.docs.length < MORE_ORDERS_PAGE_SIZE) {
+        setHasMoreOrders(false);
+      }
+
+      setLoadingMore(false);
+      return true;
+    } catch (error) {
+      console.error("Error al cargar más pedidos:", error);
+      setLoadingMore(false);
+      return false;
+    }
+  };
+
+  // ==========================================
+  // GASTOS
+  // ==========================================
   useEffect(() => {
     const q = query(collection(db, "expenses"), orderBy("date", "desc"));
-    const unsub = onSnapshot(q, snap => {
+    const unsub = onSnapshot(q, (snap) => {
       const list = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+      snap.forEach((d) => list.push({ id: d.id, ...d.data() }));
       setExpenses(list);
     });
     return () => unsub();
   }, []);
 
-  // Suscripción a pagos
+  // ==========================================
+  // PAGOS
+  // ==========================================
   useEffect(() => {
     const q = query(collection(db, "payments"), orderBy("date", "desc"));
-    const unsub = onSnapshot(q, snap => {
+    const unsub = onSnapshot(q, (snap) => {
       const list = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+      snap.forEach((d) => list.push({ id: d.id, ...d.data() }));
       setPayments(list);
     });
     return () => unsub();
   }, []);
 
+  // ==========================================
+  // CREAR PEDIDO + RECEIVABLE AUTOMÁTICO
+  // ==========================================
   const addOrder = async (order) => {
     const numericId = await getNextNumericId();
-    await addDoc(collection(db, "orders"), {
+    const isCredit = order.paymentMethod?.includes("credito");
+
+    const orderData = {
       ...order,
       numericId,
       createdAt: new Date(),
       timestamps: { preparacion: new Date() },
-      paymentStatus: order.paymentMethod?.includes("credito") ? "credito" : "pendiente",
+      paymentStatus: isCredit ? "credito" : "pendiente",
       paymentMethod: order.paymentMethod || null,
       totalPaid: 0,
       paymentProof: null,
       creditType: order.creditType || null,
-    });
+    };
+
+    const docRef = await addDoc(collection(db, "orders"), orderData);
+
+    if (isCredit) {
+      try {
+        await createReceivableFromOrder({
+          id: docRef.id,
+          ...orderData,
+        });
+      } catch (error) {
+        console.error("Error creando cuenta por cobrar:", error);
+      }
+    }
+
     return true;
   };
 
-  // Registrar un abono/pago
-  const registerPayment = async (orderId, amount, paymentMethod, paymentProof, comment) => {
+  const registerPayment = async (
+    orderId,
+    amount,
+    paymentMethod,
+    paymentProof,
+    comment,
+  ) => {
     if (!amount || amount <= 0) {
       alert("❌ Ingresa un monto válido");
       return false;
     }
 
-    const order = orders.find(o => o.id === orderId);
+    const order = orders.find((o) => o.id === orderId);
     if (!order) return false;
 
     const newTotalPaid = (order.totalPaid || 0) + amount;
@@ -112,7 +251,13 @@ export function OrderProvider({ children }) {
         lastPaymentDate: new Date(),
       });
 
-      alert(isFullyPaid ? "✅ Pedido pagado completamente" : `✅ Abono de $${amount.toLocaleString()} registrado. Saldo pendiente: $${(order.total - newTotalPaid).toLocaleString()}`);
+      alert(
+        isFullyPaid
+          ? "✅ Pedido pagado completamente"
+          : `✅ Abono de $${amount.toLocaleString()} registrado. Saldo pendiente: $${(
+              order.total - newTotalPaid
+            ).toLocaleString()}`,
+      );
       return true;
     } catch (error) {
       console.error("Error al registrar pago:", error);
@@ -122,36 +267,55 @@ export function OrderProvider({ children }) {
   };
 
   const getPaymentsByOrder = (orderId) => {
-    return payments.filter(p => p.orderId === orderId).sort((a, b) => new Date(b.date) - new Date(a.date));
+    return payments
+      .filter((p) => p.orderId === orderId)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
   };
 
   const getActiveCredits = () => {
-    return orders.filter(o =>
-      o.paymentStatus === "credito" &&
-      (o.totalPaid || 0) < (o.total || 0)
-    ).sort((a, b) => (b.createdAt?.toDate?.() || new Date(b.createdAt)) - (a.createdAt?.toDate?.() || new Date(a.createdAt)));
+    return orders
+      .filter(
+        (o) =>
+          o.paymentStatus === "credito" && (o.totalPaid || 0) < (o.total || 0),
+      )
+      .sort(
+        (a, b) =>
+          (b.createdAt?.toDate?.() || new Date(b.createdAt)) -
+          (a.createdAt?.toDate?.() || new Date(a.createdAt)),
+      );
   };
 
   const getCreditSummaryBySeller = () => {
     const summary = {};
-    orders.forEach(order => {
-      if (order.paymentStatus === "credito" && (order.totalPaid || 0) < (order.total || 0)) {
+    orders.forEach((order) => {
+      if (
+        order.paymentStatus === "credito" &&
+        (order.totalPaid || 0) < (order.total || 0)
+      ) {
         const sellerName = order.sellerName;
         if (!summary[sellerName]) {
           summary[sellerName] = { totalDebt: 0, credits: [] };
         }
         const remaining = (order.total || 0) - (order.totalPaid || 0);
         summary[sellerName].totalDebt += remaining;
-        summary[sellerName].credits.push({ ...order, remainingDebt: remaining });
+        summary[sellerName].credits.push({
+          ...order,
+          remainingDebt: remaining,
+        });
       }
     });
     return summary;
   };
 
-  // ✅ REGISTRAR GASTO
-  const addExpense = async (sellerId, sellerName, concept, amount, category, comment, receipt) => {
-    console.log("📝 Registrando gasto:", { sellerId, sellerName, concept, amount, category });
-
+  const addExpense = async (
+    sellerId,
+    sellerName,
+    concept,
+    amount,
+    category,
+    comment,
+    receipt,
+  ) => {
     if (!concept || !amount || !category) {
       alert("❌ Completa los campos requeridos");
       return false;
@@ -179,13 +343,15 @@ export function OrderProvider({ children }) {
     }
   };
 
-  // ✅ OBTENER GASTOS - SIN NECESIDAD DE ÍNDICES
   const getExpenses = async (filters = {}) => {
     try {
       let q;
 
       if (filters.sellerId) {
-        q = query(collection(db, "expenses"), where("sellerId", "==", filters.sellerId));
+        q = query(
+          collection(db, "expenses"),
+          where("sellerId", "==", filters.sellerId),
+        );
       } else {
         q = query(collection(db, "expenses"), orderBy("date", "desc"));
       }
@@ -211,7 +377,6 @@ export function OrderProvider({ children }) {
         });
       }
 
-      console.log("📋 Gastos encontrados:", list.length);
       return list;
     } catch (error) {
       console.error("Error al obtener gastos:", error);
@@ -221,12 +386,12 @@ export function OrderProvider({ children }) {
 
   const getAllExpensesGrouped = () => {
     const grouped = {};
-    expenses.forEach(expense => {
+    expenses.forEach((expense) => {
       if (!grouped[expense.sellerId]) {
         grouped[expense.sellerId] = {
           sellerName: expense.sellerName,
           total: 0,
-          expenses: []
+          expenses: [],
         };
       }
       grouped[expense.sellerId].total += expense.amount || 0;
@@ -235,7 +400,13 @@ export function OrderProvider({ children }) {
     return grouped;
   };
 
-  const updatePayment = async (orderId, paymentStatus, paymentMethod, paymentProof, creditType) => {
+  const updatePayment = async (
+    orderId,
+    paymentStatus,
+    paymentMethod,
+    paymentProof,
+    creditType,
+  ) => {
     try {
       const orderRef = doc(db, "orders", orderId);
       await updateDoc(orderRef, {
@@ -256,25 +427,38 @@ export function OrderProvider({ children }) {
   const updateStatus = async (id, newStatus, role) => {
     if (locks.current.has(id)) return;
     locks.current.add(id);
-    const order = orders.find(o => o.id === id);
+    const order = orders.find((o) => o.id === id);
     if (!order) return;
     const current = order.status;
     const ts = order.timestamps || {};
     let update = {};
 
-    if (current === "preparacion" && newStatus === "reparto") update = { status: "reparto", timestamps: { ...ts, reparto: new Date() } };
-    else if (current === "reparto" && newStatus === "entregado") update = { status: "entregado", timestamps: { ...ts, entregado: new Date() } };
+    if (current === "preparacion" && newStatus === "reparto")
+      update = {
+        status: "reparto",
+        timestamps: { ...ts, reparto: new Date() },
+      };
+    else if (current === "reparto" && newStatus === "entregado")
+      update = {
+        status: "entregado",
+        timestamps: { ...ts, entregado: new Date() },
+      };
     else if (role !== "vendedor") {
-      if (current === "reparto" && newStatus === "preparacion") { const { reparto, entregado, ...rest } = ts; update = { status: "preparacion", timestamps: rest }; }
-      else if (current === "entregado" && newStatus === "reparto") { const { entregado, ...rest } = ts; update = { status: "reparto", timestamps: rest }; }
+      if (current === "reparto" && newStatus === "preparacion") {
+        const { reparto, entregado, ...rest } = ts;
+        update = { status: "preparacion", timestamps: rest };
+      } else if (current === "entregado" && newStatus === "reparto") {
+        const { entregado, ...rest } = ts;
+        update = { status: "reparto", timestamps: rest };
+      }
     }
-    if (Object.keys(update).length) await updateDoc(doc(db, "orders", id), update);
+    if (Object.keys(update).length)
+      await updateDoc(doc(db, "orders", id), update);
     setTimeout(() => locks.current.delete(id), 300);
   };
 
-  // 🔥 CORREGIDO: Ahora CANCELA (cambia estado) en lugar de ELIMINAR
   const cancelOrder = async (id, user, productCtx) => {
-    const order = orders.find(o => o.id === id);
+    const order = orders.find((o) => o.id === id);
     if (!order) {
       alert("❌ Pedido no encontrado");
       return;
@@ -290,24 +474,28 @@ export function OrderProvider({ children }) {
       return;
     }
 
-    if (!confirm(`¿Cancelar pedido #${order.numericId || order.id.slice(-6)}? Se devolverá el stock.`)) {
+    if (
+      !confirm(
+        `¿Cancelar pedido #${
+          order.numericId || order.id.slice(-6)
+        }? Se devolverá el stock.`,
+      )
+    ) {
       return;
     }
 
     try {
-      // Devolver stock si tiene productos
       if (order.items && productCtx) {
         await productCtx.returnStockFromOrder(order.items, user);
       }
 
-      // 🔥 NUEVO: En lugar de eliminar, CAMBIAMOS el estado a "cancelado"
       const orderRef = doc(db, "orders", id);
       await updateDoc(orderRef, {
         status: "cancelado",
         timestamps: {
           ...(order.timestamps || {}),
-          cancelado: new Date()
-        }
+          cancelado: new Date(),
+        },
       });
 
       alert("✅ Pedido cancelado correctamente");
@@ -318,22 +506,27 @@ export function OrderProvider({ children }) {
   };
 
   return (
-    <OrderContext.Provider value={{
-      orders,
-      expenses,
-      payments,
-      addOrder,
-      updateStatus,
-      cancelOrder,
-      updatePayment,
-      addExpense,
-      getExpenses,
-      getAllExpensesGrouped,
-      registerPayment,
-      getPaymentsByOrder,
-      getActiveCredits,
-      getCreditSummaryBySeller,
-    }}>
+    <OrderContext.Provider
+      value={{
+        orders,
+        expenses,
+        payments,
+        hasMoreOrders,
+        loadingMore,
+        loadMoreOrders,
+        addOrder,
+        updateStatus,
+        cancelOrder,
+        updatePayment,
+        addExpense,
+        getExpenses,
+        getAllExpensesGrouped,
+        registerPayment,
+        getPaymentsByOrder,
+        getActiveCredits,
+        getCreditSummaryBySeller,
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );
